@@ -22,21 +22,23 @@ class Lzf {
         Byte ctrl = inData[iidx];
         iidx++;
 
-        if (ctrl >= 32) {
+        if (ctrl < 32) {
+            handleSmallControlValue(ctrl);
+        } else {
             throw new IllegalArgumentException();
         }
 
-        boolean doInnerLoop = true;
-        while (doInnerLoop) {
+        return oidx;
+    }
+
+    private void handleSmallControlValue(Byte ctrl) {
+        while (ctrl > 0) {
             outData[oidx] = inData[iidx];
             oidx++;
             iidx++;
 
             ctrl--;
-            doInnerLoop = ctrl > 0;
         }
-
-        return oidx;
     }
 
     public static int decompress(Byte[] inData, Byte[] outData) throws IllegalArgumentException {

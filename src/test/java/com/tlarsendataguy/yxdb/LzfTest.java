@@ -9,7 +9,16 @@ public class LzfTest {
         Byte[] in = new Byte[]{};
         Byte[] out = new Byte[]{};
 
-        int written = lzf.decompress(in, out);
+        int written = Lzf.decompress(in, out);
         Assertions.assertEquals(0, written);
+    }
+
+    @Test
+    public void TestSmallControl() {
+        Byte[] in = new Byte[]{1, 25};
+        Byte[] out = new Byte[]{0};
+
+        int written = Lzf.decompress(in, out);
+        Assertions.assertEquals(1, written);
     }
 }

@@ -3,6 +3,8 @@ package com.tlarsendataguy.yxdb;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
 
+import java.util.Optional;
+
 public class LzfTest {
     @Test
     public void TestEmptyInput() {
@@ -20,5 +22,6 @@ public class LzfTest {
 
         int written = Lzf.decompress(in, out);
         Assertions.assertEquals(1, written);
+        Assertions.assertEquals(25, (int)out[0]);
     }
 }

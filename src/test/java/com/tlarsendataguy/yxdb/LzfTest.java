@@ -14,7 +14,7 @@ public class LzfTest {
     }
 
     @Test
-    public void TestSmallControlValues() {
+    public void SmallControlValuesDoSimpleCopies() {
         Byte[] in = new Byte[]{1, 25};
         Byte[] out = new Byte[]{0};
 

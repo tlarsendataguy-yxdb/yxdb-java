@@ -3,8 +3,6 @@ package com.tlarsendataguy.yxdb;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
 
-import java.util.Optional;
-
 public class LzfTest {
     @Test
     public void TestEmptyInput() {
@@ -16,7 +14,7 @@ public class LzfTest {
     }
 
     @Test
-    public void TestSmallControl() {
+    public void TestSmallControlValues() {
         Byte[] in = new Byte[]{1, 25};
         Byte[] out = new Byte[]{0};
 

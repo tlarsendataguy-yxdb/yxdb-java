@@ -32,17 +32,13 @@ class Lzf {
     }
 
     private void handleSmallControlValue(Byte ctrl) throws IllegalArgumentException {
-        ctrl++;
-        if (oidx + ctrl > outData.length) {
+        int len = ctrl+1;
+        if (oidx + len > outData.length) {
             throw new IllegalArgumentException("output array is too small");
         }
-        while (ctrl > 0) {
-            outData[oidx] = inData[iidx];
-            oidx++;
-            iidx++;
-
-            ctrl--;
-        }
+        System.arraycopy(inData, iidx, outData, oidx, len);
+        oidx += len;
+        iidx += len;
     }
 
     public static int decompress(Byte[] inData, Byte[] outData) throws IllegalArgumentException {

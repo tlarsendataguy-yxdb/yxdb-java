@@ -31,7 +31,11 @@ class Lzf {
         return oidx;
     }
 
-    private void handleSmallControlValue(Byte ctrl) {
+    private void handleSmallControlValue(Byte ctrl) throws IllegalArgumentException {
+        ctrl++;
+        if (oidx + ctrl > outData.length) {
+            throw new IllegalArgumentException("output array is too small");
+        }
         while (ctrl > 0) {
             outData[oidx] = inData[iidx];
             oidx++;

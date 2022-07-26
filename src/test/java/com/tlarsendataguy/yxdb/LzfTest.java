@@ -40,4 +40,11 @@ public class LzfTest {
         Assertions.assertEquals(5, written);
         Assertions.assertArrayEquals(new Byte[]{25, 30, 1, 22, 99}, out);
     }
+
+    @Test
+    public void Sandbox(){
+        System.out.println(1<<5);
+        System.out.println(32>>5);
+        System.out.println((32 & 0x1f) << 8);
+    }
 }

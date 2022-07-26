@@ -23,7 +23,7 @@ class Lzf {
         iidx++;
 
         if (ctrl < 32) {
-            handleSmallControlValue(ctrl);
+            copyUncompressedBlock(ctrl);
         } else {
             throw new IllegalArgumentException();
         }
@@ -31,7 +31,7 @@ class Lzf {
         return oidx;
     }
 
-    private void handleSmallControlValue(Byte ctrl) throws IllegalArgumentException {
+    private void copyUncompressedBlock(Byte ctrl) throws IllegalArgumentException {
         int len = ctrl+1;
         if (oidx + len > outData.length) {
             throw new IllegalArgumentException("output array is too small");

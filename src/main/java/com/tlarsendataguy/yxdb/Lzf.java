@@ -45,14 +45,14 @@ class Lzf {
 
     private void expandRepeatedBytes(int ctrl) throws IllegalArgumentException {
         int length = ctrl >> 5;
-        int reference = oidx - ((ctrl & 0x1f) << 8) - 1;
+        int reference = oidx - ((ctrl & 0x1f) << 8) - 1; // magic
 
-        if (length == 7) {
+        if (length == 7) { // when length is 7, the next byte has additional length
             length += unsign(inData[iidx]);
             iidx++;
         }
 
-        reference -= unsign(inData[iidx]);
+        reference -= unsign(inData[iidx]); // the next byte tells how far back the repeated bytes begin
         iidx++;
 
         reference = copyFromReferenceAndIncrement(reference);
@@ -76,6 +76,6 @@ class Lzf {
     }
 
     private static int unsign(byte value) {
-        return value & 0xff;
+        return value & 0xff; // Java's bytes are signed while the original algorithm is written for unsigned bytes
     }
 }

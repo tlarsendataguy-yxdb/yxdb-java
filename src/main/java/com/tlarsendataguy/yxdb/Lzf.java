@@ -47,7 +47,12 @@ class Lzf {
         int length = ctrl >> 5;
         int reference = oidx - ((ctrl & 0x1f) << 8) - 1;
 
-        reference -= inData[iidx];
+        if (length == 7) {
+            length += unsign(inData[iidx]);
+            iidx++;
+        }
+
+        reference -= unsign(inData[iidx]);
         iidx++;
 
         outData[oidx] = outData[reference];

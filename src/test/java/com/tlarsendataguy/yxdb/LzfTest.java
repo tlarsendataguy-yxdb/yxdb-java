@@ -63,12 +63,12 @@ public class LzfTest {
 
     @Test
     public void LargeControlValuesWithLengthOf7() {
-        byte[] in = new byte[]{9, 1, 2, 3, 4, 5, 6, 7, 8, 9, (byte)224, 2};
-        byte[] out = new byte[6];
+        byte[] in = new byte[]{8, 1, 2, 3, 4, 5, 6, 7, 8, 9, (byte)224, 1, 8};
+        byte[] out = new byte[19];
 
-        //int written = Lzf.decompress(in, out);
-        //Assertions.assertEquals(6, written);
-        //Assertions.assertArrayEquals(new byte[]{25, 30, 1, 25, 30, 1}, out);
+        int written = Lzf.decompress(in, out);
+        Assertions.assertEquals(19, written);
+        Assertions.assertArrayEquals(new byte[]{1,2,3,4,5,6,7,8,9,1,2,3,4,5,6,7,8,9,1}, out);
     }
 
     @Test

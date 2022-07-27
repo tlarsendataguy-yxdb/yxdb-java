@@ -52,14 +52,19 @@ public class LzfTest {
     }
 
     @Test
+    public void ExpandLargeControlValues() {
+        Byte[] in = new Byte[]{2, 25, 30, 1, 32, 2};
+        Byte[] out = new Byte[6];
+
+        int written = Lzf.decompress(in, out);
+        Assertions.assertEquals(6, written);
+        Assertions.assertArrayEquals(new Byte[]{25, 30, 1, 25, 30, 1}, out);
+    }
+
+    @Test
     public void Sandbox(){
-        System.out.println(1<<5);
-        System.out.println(32>>5);
-        System.out.println((32 & 0x1f) << 8);
-        System.out.println(0x1f);
-        System.out.println((32 & 31) << 8);
-        System.out.println(32 & 31);
-        System.out.println(1 << 8);
-        System.out.println(1 >> 5);
+        System.out.println(224 >> 5);
+        System.out.println((224 & 0x1f) << 8);
+        System.out.println(7 << 5);
     }
 }

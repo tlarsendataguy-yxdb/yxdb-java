@@ -26,7 +26,7 @@ class Lzf {
             if (ctrl < 32) {
                 copyUncompressedBlock(ctrl);
             } else {
-                throw new IllegalArgumentException();
+                expandBlock(ctrl);
             }
         }
 
@@ -41,6 +41,29 @@ class Lzf {
         System.arraycopy(inData, iidx, outData, oidx, len);
         oidx += len;
         iidx += len;
+    }
+
+    private void expandBlock(Byte ctrl) throws IllegalArgumentException {
+        int length = ctrl >> 5;
+        int reference = oidx - ((ctrl & 0x1f) << 8) - 1;
+
+        reference -= inData[iidx];
+        iidx++;
+
+        outData[oidx] = outData[reference];
+        oidx++;
+        reference++;
+
+        outData[oidx] = outData[reference];
+        oidx++;
+        reference++;
+
+        while (length > 0) {
+            outData[oidx] = outData[reference];
+            oidx++;
+            reference++;
+            length--;
+        }
     }
 
     public static int decompress(Byte[] inData, Byte[] outData) throws IllegalArgumentException {

@@ -24,16 +24,16 @@ class Lzf {
             iidx++;
 
             if (ctrl < 32) {
-                copyUncompressedBlock(ctrl);
+                copyByteSequence(ctrl);
             } else {
-                expandBlock(ctrl);
+                expandRepeatedBytes(ctrl);
             }
         }
 
         return oidx;
     }
 
-    private void copyUncompressedBlock(int ctrl) throws IllegalArgumentException {
+    private void copyByteSequence(int ctrl) throws IllegalArgumentException {
         int len = ctrl+1;
         if (oidx + len > outData.length) {
             throw new IllegalArgumentException("output array is too small");
@@ -43,7 +43,7 @@ class Lzf {
         iidx += len;
     }
 
-    private void expandBlock(int ctrl) throws IllegalArgumentException {
+    private void expandRepeatedBytes(int ctrl) throws IllegalArgumentException {
         int length = ctrl >> 5;
         int reference = oidx - ((ctrl & 0x1f) << 8) - 1;
 

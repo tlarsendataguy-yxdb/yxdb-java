@@ -1,15 +1,15 @@
 package com.tlarsendataguy.yxdb;
 
 class Lzf {
-    private Lzf(Byte[] inData, Byte[] outData){
+    private Lzf(byte[] inData, byte[] outData){
         this.inData = inData;
         this.outData = outData;
         this.iidx = 0;
         this.oidx = 0;
         this.inLen = inData.length;
     }
-    Byte[] inData;
-    Byte[] outData;
+    byte[] inData;
+    byte[] outData;
     int iidx;
     int oidx;
     int inLen;
@@ -20,7 +20,7 @@ class Lzf {
         }
 
         while (iidx < inLen) {
-            Byte ctrl = inData[iidx];
+            int ctrl = unsign(inData[iidx]);
             iidx++;
 
             if (ctrl < 32) {
@@ -33,7 +33,7 @@ class Lzf {
         return oidx;
     }
 
-    private void copyUncompressedBlock(Byte ctrl) throws IllegalArgumentException {
+    private void copyUncompressedBlock(int ctrl) throws IllegalArgumentException {
         int len = ctrl+1;
         if (oidx + len > outData.length) {
             throw new IllegalArgumentException("output array is too small");
@@ -43,7 +43,7 @@ class Lzf {
         iidx += len;
     }
 
-    private void expandBlock(Byte ctrl) throws IllegalArgumentException {
+    private void expandBlock(int ctrl) throws IllegalArgumentException {
         int length = ctrl >> 5;
         int reference = oidx - ((ctrl & 0x1f) << 8) - 1;
 
@@ -66,8 +66,12 @@ class Lzf {
         }
     }
 
-    public static int decompress(Byte[] inData, Byte[] outData) throws IllegalArgumentException {
+    public static int decompress(byte[] inData, byte[] outData) throws IllegalArgumentException {
         Lzf lzf = new Lzf(inData, outData);
         return lzf.execute();
+    }
+
+    private static int unsign(byte value) {
+        return value & 0xff;
     }
 }

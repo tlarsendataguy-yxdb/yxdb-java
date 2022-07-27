@@ -19,13 +19,15 @@ class Lzf {
             return 0;
         }
 
-        Byte ctrl = inData[iidx];
-        iidx++;
+        while (iidx < inLen) {
+            Byte ctrl = inData[iidx];
+            iidx++;
 
-        if (ctrl < 32) {
-            copyUncompressedBlock(ctrl);
-        } else {
-            throw new IllegalArgumentException();
+            if (ctrl < 32) {
+                copyUncompressedBlock(ctrl);
+            } else {
+                throw new IllegalArgumentException();
+            }
         }
 
         return oidx;

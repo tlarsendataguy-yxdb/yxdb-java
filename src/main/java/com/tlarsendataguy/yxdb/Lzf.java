@@ -55,20 +55,19 @@ class Lzf {
         reference -= unsign(inData[iidx]);
         iidx++;
 
-        outData[oidx] = outData[reference];
-        oidx++;
-        reference++;
-
-        outData[oidx] = outData[reference];
-        oidx++;
-        reference++;
+        reference = copyFromReferenceAndIncrement(reference);
+        reference = copyFromReferenceAndIncrement(reference);
 
         while (length > 0) {
-            outData[oidx] = outData[reference];
-            oidx++;
-            reference++;
+            reference = copyFromReferenceAndIncrement(reference);
             length--;
         }
+    }
+
+    private int copyFromReferenceAndIncrement(int reference) {
+        outData[oidx] = outData[reference];
+        oidx++;
+        return reference+1;
     }
 
     public static int decompress(byte[] inData, byte[] outData) throws IllegalArgumentException {

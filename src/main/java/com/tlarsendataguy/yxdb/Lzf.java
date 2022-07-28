@@ -1,12 +1,9 @@
 package com.tlarsendataguy.yxdb;
 
 class Lzf {
-    private Lzf(byte[] inData, byte[] outData){
+    Lzf(byte[] inData, byte[] outData){
         this.inData = inData;
         this.outData = outData;
-        this.iidx = 0;
-        this.oidx = 0;
-        this.inLen = inData.length;
     }
     byte[] inData;
     byte[] outData;
@@ -14,7 +11,10 @@ class Lzf {
     int oidx;
     int inLen;
 
-    private int execute() {
+    public int decompress(int len) throws IllegalArgumentException {
+        inLen = len;
+        reset();
+
         if (inLen == 0) {
             return 0;
         }
@@ -31,6 +31,11 @@ class Lzf {
         }
 
         return oidx;
+    }
+
+    private void reset() {
+        this.iidx = 0;
+        this.oidx = 0;
     }
 
     private void copyByteSequence(int ctrl) throws IllegalArgumentException {
@@ -52,6 +57,10 @@ class Lzf {
             iidx++;
         }
 
+        if (oidx+length+2 > outData.length) {
+            throw new IllegalArgumentException("output array is too small");
+        }
+
         reference -= unsign(inData[iidx]); // the next byte tells how far back the repeated bytes begin
         iidx++;
 
@@ -68,11 +77,6 @@ class Lzf {
         outData[oidx] = outData[reference];
         oidx++;
         return reference+1;
-    }
-
-    public static int decompress(byte[] inData, byte[] outData) throws IllegalArgumentException {
-        Lzf lzf = new Lzf(inData, outData);
-        return lzf.execute();
     }
 
     private static int unsign(byte value) {

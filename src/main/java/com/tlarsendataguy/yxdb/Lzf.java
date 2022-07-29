@@ -1,12 +1,12 @@
 package com.tlarsendataguy.yxdb;
 
 class Lzf {
-    Lzf(byte[] inData, byte[] outData){
-        this.inData = inData;
-        this.outData = outData;
+    Lzf(byte[] inBuffer, byte[] outBuffer){
+        this.inBuffer = inBuffer;
+        this.outBuffer = outBuffer;
     }
-    byte[] inData;
-    byte[] outData;
+    byte[] inBuffer;
+    byte[] outBuffer;
     int iidx;
     int oidx;
     int inLen;
@@ -20,7 +20,7 @@ class Lzf {
         }
 
         while (iidx < inLen) {
-            int ctrl = unsign(inData[iidx]);
+            int ctrl = unsign(inBuffer[iidx]);
             iidx++;
 
             if (ctrl < 32) {
@@ -40,10 +40,10 @@ class Lzf {
 
     private void copyByteSequence(int ctrl) throws IllegalArgumentException {
         int len = ctrl+1;
-        if (oidx + len > outData.length) {
+        if (oidx + len > outBuffer.length) {
             throw new IllegalArgumentException("output array is too small");
         }
-        System.arraycopy(inData, iidx, outData, oidx, len);
+        System.arraycopy(inBuffer, iidx, outBuffer, oidx, len);
         oidx += len;
         iidx += len;
     }
@@ -53,15 +53,15 @@ class Lzf {
         int reference = oidx - ((ctrl & 0x1f) << 8) - 1; // magic
 
         if (length == 7) { // when length is 7, the next byte has additional length
-            length += unsign(inData[iidx]);
+            length += unsign(inBuffer[iidx]);
             iidx++;
         }
 
-        if (oidx+length+2 > outData.length) {
+        if (oidx+length+2 > outBuffer.length) {
             throw new IllegalArgumentException("output array is too small");
         }
 
-        reference -= unsign(inData[iidx]); // the next byte tells how far back the repeated bytes begin
+        reference -= unsign(inBuffer[iidx]); // the next byte tells how far back the repeated bytes begin
         iidx++;
 
         reference = copyFromReferenceAndIncrement(reference);
@@ -74,7 +74,7 @@ class Lzf {
     }
 
     private int copyFromReferenceAndIncrement(int reference) {
-        outData[oidx] = outData[reference];
+        outBuffer[oidx] = outBuffer[reference];
         oidx++;
         return reference+1;
     }

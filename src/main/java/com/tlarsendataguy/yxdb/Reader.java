@@ -51,7 +51,7 @@ public class Reader {
         metaInfoStr = new String(metaInfoBytes, StandardCharsets.UTF_16LE);
         getFields();
     }
-    private ByteBuffer getHeader() throws IOException {
+    private ByteBuffer getHeader() throws IOException, IllegalArgumentException {
         var headerBytes = new byte[512];
         var written = stream.readNBytes(headerBytes,0, 512);
         if (written < 512) {
@@ -60,17 +60,17 @@ public class Reader {
         return ByteBuffer.wrap(headerBytes).order(ByteOrder.LITTLE_ENDIAN);
     }
 
-    private void getFields() throws IOException, IllegalArgumentException {
-        Document doc = null;
+    private void getFields() throws IllegalArgumentException {
+        Document doc;
         try {
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             doc = builder.parse(new InputSource(new StringReader(metaInfoStr)));
             doc.getDocumentElement().normalize();
         } catch (Exception ex) {
             closeStreamAndThrow();
+            return;
         }
 
-        assert doc != null;
         var info = doc.getElementsByTagName("RecordInfo").item(0);
         var nodes = info.getChildNodes();
         var index = 0;
@@ -85,8 +85,11 @@ public class Reader {
             var size = attributes.getNamedItem("size");
             var type = attributes.getNamedItem("type");
             var scale = attributes.getNamedItem("scale");
-            assert name != null;
-            assert type != null;
+
+            if (name == null || type == null) {
+                closeStreamAndThrow();
+                return;
+            }
 
             var nameStr = name.getNodeValue();
             switch (type.getNodeValue()) {
@@ -96,18 +99,26 @@ public class Reader {
                 case "Int32" -> fields.add(new Field(index, nameStr, "Int32", 4, 0));
                 case "Int64" -> fields.add(new Field(index, nameStr, "Int64", 8, 0));
                 case "FixedDecimal" -> {
-                    assert scale != null;
-                    assert size != null;
+                    if (scale == null || size == null) {
+                        closeStreamAndThrow();
+                        return;
+                    }
                     fields.add(new Field(index, nameStr, "FixedDecimal", parseInt(size.getNodeValue()), parseInt(scale.getNodeValue())));
                 }
                 case "Float" -> fields.add(new Field(index, nameStr, "Float", 4, 0));
                 case "Double" -> fields.add(new Field(index, nameStr, "Double", 8, 0));
                 case "String" -> {
-                    assert size != null;
+                    if (size == null) {
+                        closeStreamAndThrow();
+                        return;
+                    }
                     fields.add(new Field(index, nameStr, "String", parseInt(size.getNodeValue()), 0));
                 }
                 case "WString" -> {
-                    assert size != null;
+                    if (size == null) {
+                        closeStreamAndThrow();
+                        return;
+                    }
                     fields.add(new Field(index, nameStr, "WString", parseInt(size.getNodeValue()) * 2, 0));
                 }
                 case "V_String", "V_WString", "Blob", "SpatialObj" -> fields.add(new Field(index, nameStr, type.getNodeValue(), 4, 0));
@@ -117,11 +128,13 @@ public class Reader {
             }
             index++;
         }
-
     }
 
-    private void closeStreamAndThrow() throws IOException, IllegalArgumentException {
-        stream.close();
-        throw new IllegalArgumentException(String.format("file '%s' is an invalid yxdb file", path));
+    private void closeStreamAndThrow() throws IllegalArgumentException {
+        try {
+            stream.close();
+        } catch (Exception ex) {
+            throw new IllegalArgumentException(String.format("file '%s' is an invalid yxdb file", path));
+        }
     }
 }

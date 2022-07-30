@@ -56,6 +56,30 @@ public class ExtractorsTest {
         Assertions.assertNull(result);
     }
 
+    @Test
+    public void Int64ExtractorAtBeginning(){
+        var extract = Extractors.NewInt64Extractor(0);
+        Long result = extractFromBuffer(extract, new byte[]{10,0,0,0,0,0,0,0, 0});
+
+        Assertions.assertEquals(10, result);
+    }
+
+    @Test
+    public void Int64ExtractorInMiddle(){
+        var extract = Extractors.NewInt64Extractor(4);
+        Long result = extractFromBuffer(extract, new byte[]{0,0,0,0,10,0,0,0,0,0,0,0, 0});
+
+        Assertions.assertEquals(10, result);
+    }
+
+    @Test
+    public void ExtractNullInt64(){
+        var extract = Extractors.NewInt64Extractor(4);
+        Long result = extractFromBuffer(extract, new byte[]{0,0,0,0,10,0,0,0,0,0,0,0, 1});
+
+        Assertions.assertNull(result);
+    }
+
     private static <T> T extractFromBuffer(Function<ByteBuffer, T> extract, byte[] data){
         var buffer = ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN);
         return extract.apply(buffer);

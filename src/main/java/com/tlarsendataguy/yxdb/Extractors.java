@@ -24,4 +24,13 @@ public class Extractors {
             return (long)value;
         };
     }
+
+    public static Function<ByteBuffer, Long> NewInt64Extractor(int start) {
+        return (buffer) -> {
+            if (buffer.get(start+8) == 1) {
+                return null;
+            }
+            return buffer.getLong(start);
+        };
+    }
 }

@@ -32,6 +32,14 @@ public class ExtractorsTest {
         Assertions.assertEquals(10, result);
     }
 
+    @Test
+    public void Int32ExtractorInMiddle(){
+        var extract = Extractors.NewInt32Extractor(3);
+        Long result = extractFromBuffer(extract, new byte[]{0, 0, 0, 10,0,0,0});
+
+        Assertions.assertEquals(10, result);
+    }
+
     private static <T> T extractFromBuffer(Function<ByteBuffer, T> extract, byte[] data){
         var buffer = ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN);
         return extract.apply(buffer);

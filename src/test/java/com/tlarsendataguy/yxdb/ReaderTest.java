@@ -2,6 +2,16 @@ package com.tlarsendataguy.yxdb;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
+import java.io.StringReader;
 
 public class ReaderTest {
     @Test
@@ -15,6 +25,30 @@ public class ReaderTest {
             Assertions.assertEquals(AllNormalFieldsMetaXml, yxdb.metaInfoStr);
         } catch (Exception ex){
             Assertions.fail(ex.toString());
+        }
+    }
+
+    @Test
+    public void TestXml() throws IOException, SAXException, ParserConfigurationException {
+        DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+        Document doc = builder.parse(new InputSource(new StringReader(AllNormalFieldsMetaXml)));
+        doc.getDocumentElement().normalize();
+
+        var info = doc.getElementsByTagName("RecordInfo").item(0);
+        System.out.println(info.getNodeName());
+        var nodes = info.getChildNodes();
+
+        for (int i = 0; i < nodes.getLength(); i++) {
+            var field = nodes.item(i);
+            if (field.getNodeType() != Node.ELEMENT_NODE) {
+                continue;
+            }
+            var attributes = field.getAttributes();
+            System.out.println(attributes.getNamedItem("name").getNodeValue());
+            var size = attributes.getNamedItem("size");
+            if (size != null) {
+                System.out.println(field.getAttributes().getNamedItem("size").getNodeValue());
+            }
         }
     }
 

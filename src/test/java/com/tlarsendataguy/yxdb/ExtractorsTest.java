@@ -5,15 +5,35 @@ import org.junit.jupiter.api.Test;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.function.Function;
 
 public class ExtractorsTest {
     @Test
     public void Int16ExtractorAtBeginning(){
         var extract = Extractors.NewInt16Extractor(0);
-
-        var buffer = ByteBuffer.wrap(new byte[]{10, 0}).order(ByteOrder.LITTLE_ENDIAN);
-        var result = extract.apply(buffer);
+        Long result = extractFromBuffer(extract, new byte[]{10,0,0,0});
 
         Assertions.assertEquals(10, result);
+    }
+
+    @Test
+    public void Int16ExtractorInMiddle(){
+        var extract = Extractors.NewInt16Extractor(2);
+        Long result = extractFromBuffer(extract, new byte[]{0, 0, 10,0,0,0});
+
+        Assertions.assertEquals(10, result);
+    }
+
+    @Test
+    public void Int32ExtractorAtBeginning(){
+        var extract = Extractors.NewInt32Extractor(0);
+        Long result = extractFromBuffer(extract, new byte[]{10,0,0,0});
+
+        Assertions.assertEquals(10, result);
+    }
+
+    private static <T> T extractFromBuffer(Function<ByteBuffer, T> extract, byte[] data){
+        var buffer = ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN);
+        return extract.apply(buffer);
     }
 }

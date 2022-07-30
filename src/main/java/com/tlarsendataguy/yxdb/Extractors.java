@@ -11,4 +11,11 @@ public class Extractors {
             return (long)value;
         };
     }
+
+    public static Function<ByteBuffer, Long> NewInt32Extractor(int start) {
+        return (buffer) -> {
+            var value = buffer.getInt(start);
+            return (long)value;
+        };
+    }
 }

@@ -23,6 +23,7 @@ public class ReaderTest {
             Assertions.assertEquals(1372, yxdb.metaInfoSize);
             Assertions.assertNotNull(yxdb.metaInfoStr);
             Assertions.assertEquals(AllNormalFieldsMetaXml, yxdb.metaInfoStr);
+            Assertions.assertEquals(16, yxdb.fields.size());
         } catch (Exception ex){
             Assertions.fail(ex.toString());
         }

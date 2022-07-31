@@ -108,9 +108,25 @@ public class ExtractorsTest {
     }
 
     @Test
+    public void ExtractDouble() {
+        var extract = Extractors.NewDoubleExtractor(4);
+        Double result = extractFromBuffer(extract, new byte[]{0,0,0,0,-102,-103,-103,-103,-103,-103,-15,63,0});
+
+        Assertions.assertEquals(1.1, result);
+    }
+
+    @Test
+    public void ExtractNullDouble() {
+        var extract = Extractors.NewDoubleExtractor(4);
+        Double result = extractFromBuffer(extract, new byte[]{0,0,0,0,-102,-103,-103,-103,-103,-103,-15,63,1});
+
+        Assertions.assertNull(result);
+    }
+
+    @Test
     public void Sandbox() {
-        var buffer = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN);
-        buffer.putFloat(1.1f);
+        var buffer = ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN);
+        buffer.putDouble(1.1);
         System.out.println(Arrays.toString(buffer.array()));
     }
 

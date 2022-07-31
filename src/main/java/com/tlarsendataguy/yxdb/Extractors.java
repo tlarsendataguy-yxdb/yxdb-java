@@ -61,4 +61,13 @@ public class Extractors {
             return (double)buffer.getFloat(start);
         };
     }
+
+    public static Function<ByteBuffer, Double> NewDoubleExtractor(int start) {
+        return (buffer) -> {
+            if (buffer.get(start+8) == 1) {
+                return null;
+            }
+            return (double)buffer.getDouble(start);
+        };
+    }
 }

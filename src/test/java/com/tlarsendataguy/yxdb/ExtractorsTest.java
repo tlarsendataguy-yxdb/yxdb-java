@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.Arrays;
 import java.util.function.Function;
 
 public class ExtractorsTest {
@@ -88,6 +89,29 @@ public class ExtractorsTest {
         Byte result = extractFromBuffer(extract, new byte[]{0,0,0,0,2,1,0,0,0,0,0,0, 1});
 
         Assertions.assertNull(result);
+    }
+
+    @Test
+    public void ExtractFloat() {
+        var extract = Extractors.NewFloatExtractor(4);
+        Double result = extractFromBuffer(extract, new byte[]{0,0,0,0,-51,-52,-116,63,0,0,0,0, 0});
+
+        Assertions.assertEquals(1.1f, result);
+    }
+
+    @Test
+    public void ExtractNullFloat() {
+        var extract = Extractors.NewFloatExtractor(4);
+        Double result = extractFromBuffer(extract, new byte[]{0,0,0,0,-51,-52,-116,63,1,0,0,0, 0});
+
+        Assertions.assertNull(result);
+    }
+
+    @Test
+    public void Sandbox() {
+        var buffer = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN);
+        buffer.putFloat(1.1f);
+        System.out.println(Arrays.toString(buffer.array()));
     }
 
     private static <T> T extractFromBuffer(Function<ByteBuffer, T> extract, byte[] data){

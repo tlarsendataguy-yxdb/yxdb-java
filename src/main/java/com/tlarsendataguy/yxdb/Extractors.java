@@ -52,4 +52,13 @@ public class Extractors {
             return buffer.getLong(start);
         };
     }
+
+    public static Function<ByteBuffer, Double> NewFloatExtractor(int start) {
+        return (buffer) -> {
+            if (buffer.get(start+4) == 1) {
+                return null;
+            }
+            return (double)buffer.getFloat(start);
+        };
+    }
 }

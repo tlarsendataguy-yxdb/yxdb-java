@@ -5,7 +5,11 @@ import org.junit.jupiter.api.Test;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.function.Function;
 
 public class ExtractorsTest {
@@ -124,10 +128,26 @@ public class ExtractorsTest {
     }
 
     @Test
+    public void ExtractDate() throws ParseException {
+        var extract = Extractors.NewDateExtractor(4);
+        Date result = extractFromBuffer(extract, new byte[]{0,0,0,0,50,48,50,49,45,48,49,45,48,49,0});
+
+        Assertions.assertEquals(new SimpleDateFormat("yyyy-MM-dd").parse("2021-01-01"), result);
+    }
+
+    @Test
+    public void ExtractNullDate() {
+        var extract = Extractors.NewDateExtractor(4);
+        Date result = extractFromBuffer(extract, new byte[]{0,0,0,0,50,48,50,49,45,48,49,45,48,49,1});
+
+        Assertions.assertNull(result);
+    }
+
+    @Test
     public void Sandbox() {
-        var buffer = ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN);
-        buffer.putDouble(1.1);
-        System.out.println(Arrays.toString(buffer.array()));
+        var value = "2021-01-01";
+        System.out.println(Arrays.toString(value.getBytes(StandardCharsets.UTF_8)));
+
     }
 
     private static <T> T extractFromBuffer(Function<ByteBuffer, T> extract, byte[] data){

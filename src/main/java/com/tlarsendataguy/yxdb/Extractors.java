@@ -2,6 +2,11 @@ package com.tlarsendataguy.yxdb;
 
 
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.function.Function;
 
 public class Extractors {
@@ -68,6 +73,21 @@ public class Extractors {
                 return null;
             }
             return (double)buffer.getDouble(start);
+        };
+    }
+
+    private static final DateFormat date = new SimpleDateFormat("yyyy-MM-dd");
+    public static Function<ByteBuffer, Date> NewDateExtractor(int start) {
+        return (buffer) -> {
+            if (buffer.get(start+10) == 1) {
+                return null;
+            }
+            var str = new String(buffer.array(), start, 10, StandardCharsets.UTF_8);
+            try {
+                return date.parse(str);
+            } catch (ParseException ex) {
+                return null;
+            }
         };
     }
 }

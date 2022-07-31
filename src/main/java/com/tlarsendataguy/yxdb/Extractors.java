@@ -10,6 +10,9 @@ import java.util.Date;
 import java.util.function.Function;
 
 public class Extractors {
+    private static final DateFormat date = new SimpleDateFormat("yyyy-MM-dd");
+    private static final DateFormat dateTime = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+
     public static Function<ByteBuffer, Boolean> NewBoolExtractor(int start) {
         return (buffer) -> {
             var value = buffer.get(start);
@@ -76,7 +79,6 @@ public class Extractors {
         };
     }
 
-    private static final DateFormat date = new SimpleDateFormat("yyyy-MM-dd");
     public static Function<ByteBuffer, Date> NewDateExtractor(int start) {
         return (buffer) -> {
             if (buffer.get(start+10) == 1) {
@@ -85,6 +87,20 @@ public class Extractors {
             var str = new String(buffer.array(), start, 10, StandardCharsets.UTF_8);
             try {
                 return date.parse(str);
+            } catch (ParseException ex) {
+                return null;
+            }
+        };
+    }
+
+    public static Function<ByteBuffer, Date> NewDateTimeExtractor(int start) {
+        return (buffer) -> {
+            if (buffer.get(start+19) == 1) {
+                return null;
+            }
+            var str = new String(buffer.array(), start, 19, StandardCharsets.UTF_8);
+            try {
+                return dateTime.parse(str);
             } catch (ParseException ex) {
                 return null;
             }

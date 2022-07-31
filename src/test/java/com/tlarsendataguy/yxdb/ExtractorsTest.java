@@ -144,8 +144,17 @@ public class ExtractorsTest {
     }
 
     @Test
+    public void ExtractDateTime() throws ParseException {
+        var extract = Extractors.NewDateTimeExtractor(4);
+        Date result = extractFromBuffer(extract, new byte[]{0,0,0,0,50,48,50,49,45,48,49,45,48,50,32,48,51,58,48,52,58,48,53,0});
+
+        Assertions.assertEquals(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse("2021-01-02 03:04:05"), result);
+    }
+
+    @Test
     public void Sandbox() {
-        var value = "2021-01-01";
+        var value = "2021-01-02 03:04:05";
+
         System.out.println(Arrays.toString(value.getBytes(StandardCharsets.UTF_8)));
 
     }

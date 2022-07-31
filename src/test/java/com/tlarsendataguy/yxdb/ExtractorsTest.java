@@ -74,6 +74,22 @@ public class ExtractorsTest {
         Assertions.assertNull(result);
     }
 
+    @Test
+    public void ExtractByte(){
+        var extract = Extractors.NewByteExtractor(4);
+        Byte result = extractFromBuffer(extract, new byte[]{0,0,0,0,10,0,0,0,0,0,0,0, 0});
+
+        Assertions.assertEquals((byte)10, result);
+    }
+
+    @Test
+    public void ExtractNullByte(){
+        var extract = Extractors.NewByteExtractor(4);
+        Byte result = extractFromBuffer(extract, new byte[]{0,0,0,0,2,1,0,0,0,0,0,0, 1});
+
+        Assertions.assertNull(result);
+    }
+
     private static <T> T extractFromBuffer(Function<ByteBuffer, T> extract, byte[] data){
         var buffer = ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN);
         return extract.apply(buffer);

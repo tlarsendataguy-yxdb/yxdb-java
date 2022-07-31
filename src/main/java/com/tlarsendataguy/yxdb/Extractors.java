@@ -15,6 +15,15 @@ public class Extractors {
         };
     }
 
+    public static Function<ByteBuffer, Byte> NewByteExtractor(int start) {
+        return (buffer) -> {
+            if (buffer.get(start+1) == 1) {
+                return null;
+            }
+            return buffer.get(start);
+        };
+    }
+
     public static Function<ByteBuffer, Long> NewInt16Extractor(int start) {
         return (buffer) -> {
             if (buffer.get(start+2) == 1) {

@@ -5,6 +5,16 @@ import java.nio.ByteBuffer;
 import java.util.function.Function;
 
 public class Extractors {
+    public static Function<ByteBuffer, Boolean> NewBoolExtractor(int start) {
+        return (buffer) -> {
+            var value = buffer.get(start);
+            if (value == 2) {
+                return null;
+            }
+            return buffer.get(start) == 1;
+        };
+    }
+
     public static Function<ByteBuffer, Long> NewInt16Extractor(int start) {
         return (buffer) -> {
             if (buffer.get(start+2) == 1) {

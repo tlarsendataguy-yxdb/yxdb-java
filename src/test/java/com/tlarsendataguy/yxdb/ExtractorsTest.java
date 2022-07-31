@@ -9,15 +9,7 @@ import java.util.function.Function;
 
 public class ExtractorsTest {
     @Test
-    public void Int16ExtractorAtBeginning(){
-        var extract = Extractors.NewInt16Extractor(0);
-        Long result = extractFromBuffer(extract, new byte[]{10,0,0,0});
-
-        Assertions.assertEquals(10, result);
-    }
-
-    @Test
-    public void Int16ExtractorInMiddle(){
+    public void ExtractInt16(){
         var extract = Extractors.NewInt16Extractor(2);
         Long result = extractFromBuffer(extract, new byte[]{0, 0, 10,0,0,0});
 
@@ -25,7 +17,7 @@ public class ExtractorsTest {
     }
 
     @Test
-    public void Int16ExtractNull(){
+    public void ExtractNullInt16(){
         var extract = Extractors.NewInt16Extractor(2);
         Long result = extractFromBuffer(extract, new byte[]{0, 0, 10,0,1,0});
 
@@ -33,15 +25,7 @@ public class ExtractorsTest {
     }
 
     @Test
-    public void Int32ExtractorAtBeginning(){
-        var extract = Extractors.NewInt32Extractor(0);
-        Long result = extractFromBuffer(extract, new byte[]{10,0,0,0, 0});
-
-        Assertions.assertEquals(10, result);
-    }
-
-    @Test
-    public void Int32ExtractorInMiddle(){
+    public void ExtractInt32(){
         var extract = Extractors.NewInt32Extractor(3);
         Long result = extractFromBuffer(extract, new byte[]{0, 0, 0, 10,0,0,0, 0});
 
@@ -57,15 +41,7 @@ public class ExtractorsTest {
     }
 
     @Test
-    public void Int64ExtractorAtBeginning(){
-        var extract = Extractors.NewInt64Extractor(0);
-        Long result = extractFromBuffer(extract, new byte[]{10,0,0,0,0,0,0,0, 0});
-
-        Assertions.assertEquals(10, result);
-    }
-
-    @Test
-    public void Int64ExtractorInMiddle(){
+    public void ExtractInt64(){
         var extract = Extractors.NewInt64Extractor(4);
         Long result = extractFromBuffer(extract, new byte[]{0,0,0,0,10,0,0,0,0,0,0,0, 0});
 
@@ -76,6 +52,24 @@ public class ExtractorsTest {
     public void ExtractNullInt64(){
         var extract = Extractors.NewInt64Extractor(4);
         Long result = extractFromBuffer(extract, new byte[]{0,0,0,0,10,0,0,0,0,0,0,0, 1});
+
+        Assertions.assertNull(result);
+    }
+
+    @Test
+    public void ExtractBool(){
+        var extract = Extractors.NewBoolExtractor(4);
+        Boolean result = extractFromBuffer(extract, new byte[]{0,0,0,0,1,0,0,0,0,0,0,0, 0});
+        Assertions.assertTrue(result);
+
+        result = extractFromBuffer(extract, new byte[]{0,0,0,0,0,0,0,0,0,0,0,0, 0});
+        Assertions.assertFalse(result);
+    }
+
+    @Test
+    public void ExtractNullBool(){
+        var extract = Extractors.NewBoolExtractor(4);
+        Boolean result = extractFromBuffer(extract, new byte[]{0,0,0,0,2,0,0,0,0,0,0,0, 1});
 
         Assertions.assertNull(result);
     }

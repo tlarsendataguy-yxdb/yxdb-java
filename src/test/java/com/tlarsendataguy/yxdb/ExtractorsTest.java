@@ -152,6 +152,14 @@ public class ExtractorsTest {
     }
 
     @Test
+    public void ExtractNullDateTime() {
+        var extract = Extractors.NewDateTimeExtractor(4);
+        Date result = extractFromBuffer(extract, new byte[]{0,0,0,0,50,48,50,49,45,48,49,45,48,50,32,48,51,58,48,52,58,48,53,1});
+
+        Assertions.assertNull(result);
+    }
+
+    @Test
     public void Sandbox() {
         var value = "2021-01-02 03:04:05";
 

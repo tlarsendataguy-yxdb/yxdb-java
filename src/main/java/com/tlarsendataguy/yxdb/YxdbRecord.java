@@ -94,6 +94,10 @@ public class YxdbRecord {
                     record.addByteExtractor(field.name(), Extractors.NewByteExtractor(startAt));
                     startAt += 2;
                 }
+                case "Blob", "SpatialObj" -> {
+                    record.addBlobExtractor(field.name(), Extractors.NewBlobExtractor(startAt));
+                    startAt += 4;
+                }
                 default -> throw new IllegalArgumentException("field type is invalid");
             }
         }
@@ -165,6 +169,15 @@ public class YxdbRecord {
         return extractByteFrom(index);
     }
 
+    public byte[] extractBlobFrom(int index) {
+        return blobExtractors.get(index).apply(buffer);
+    }
+
+    public byte[] extractBlobFrom(String name) {
+        var index = nameToIndex.get(name);
+        return extractBlobFrom(index);
+    }
+
     private void addLongExtractor(String name, Function<ByteBuffer, Long> extractor) {
         var index = addFieldNameToIndexMap(name, YxdbField.DataType.LONG);
         longExtractors.put(index, extractor);
@@ -195,6 +208,11 @@ public class YxdbRecord {
     private void addByteExtractor(String name, Function<ByteBuffer, Byte> extractor) {
         var index = addFieldNameToIndexMap(name, YxdbField.DataType.BYTE);
         byteExtractors.put(index, extractor);
+    }
+
+    private void addBlobExtractor(String name, Function<ByteBuffer, byte[]> extractor) {
+        var index = addFieldNameToIndexMap(name, YxdbField.DataType.BLOB);
+        blobExtractors.put(index, extractor);
     }
 
     private int addFieldNameToIndexMap(String name, YxdbField.DataType type) {

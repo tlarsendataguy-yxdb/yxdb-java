@@ -130,6 +130,27 @@ public class YxdbRecordTest {
         Assertions.assertEquals((byte)23, record.extractByteFrom("value"));
     }
 
+    @Test
+    public void TestReadBlob() {
+        var record = loadRecordWithValueColumn("Blob", 100, new byte[]{0, 0, 0, 0, 4, 0, 0, 0, 1,2,3,4,5,6,7,8});
+
+        Assertions.assertEquals(1, record.fields.size());
+        Assertions.assertSame(YxdbField.DataType.BLOB, record.fields.get(0).type());
+        Assertions.assertEquals("value", record.fields.get(0).name());
+        Assertions.assertArrayEquals(new byte[]{}, record.extractBlobFrom(0));
+        Assertions.assertArrayEquals(new byte[]{}, record.extractBlobFrom("value"));
+    }
+
+    @Test
+    public void TestReadSpatialObj() {
+        var record = loadRecordWithValueColumn("SpatialObj", 100, new byte[]{0, 0, 0, 0, 4, 0, 0, 0, 1,2,3,4,5,6,7,8});
+
+        Assertions.assertEquals(1, record.fields.size());
+        Assertions.assertSame(YxdbField.DataType.BLOB, record.fields.get(0).type());
+        Assertions.assertEquals("value", record.fields.get(0).name());
+        Assertions.assertArrayEquals(new byte[]{}, record.extractBlobFrom(0));
+    }
+
     private static YxdbRecord loadRecordWithValueColumn(String type, int size, byte[] sourceData) {
         var fields = new ArrayList<MetaInfoField>(1);
         fields.add(new MetaInfoField("value", type, size, 0));

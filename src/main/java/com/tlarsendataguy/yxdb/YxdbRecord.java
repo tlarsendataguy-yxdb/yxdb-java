@@ -28,7 +28,7 @@ public class YxdbRecord {
     private final List<Function<ByteBuffer,byte[]>> blobExtractors;
 
 
-    public static YxdbRecord generateFrom(List<MetaInfoField> fields) throws IllegalArgumentException {
+    static YxdbRecord newFromFieldList(List<MetaInfoField> fields) throws IllegalArgumentException {
         YxdbRecord record = new YxdbRecord(fields.size());
         int startAt = 0;
         int startSize = 0;
@@ -51,7 +51,7 @@ public class YxdbRecord {
         return record;
     }
 
-    public void loadFrom(byte[] sourceData, int start, int to) {
+    void loadRecordBlobFrom(byte[] sourceData, int start, int to) {
         if (to <= start) {
             throw new IllegalArgumentException("to must be greater than start");
         }

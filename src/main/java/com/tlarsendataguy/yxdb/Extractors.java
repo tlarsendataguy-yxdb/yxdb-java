@@ -132,10 +132,19 @@ public class Extractors {
           if (blockStart == 1) {
               return null;
           }
-          var blobLen = buffer.getInt(start+blockStart) / 2; // why divided by 2? not sure
-          var blobStart = start + blockStart + 4;
-          var blobEnd = blobStart + blobLen;
-          return Arrays.copyOfRange(buffer.array(), blobStart, blobEnd);
+
+          var firstByte = buffer.get(start + blockStart);
+          if ((firstByte & 1) == 1) {
+              var blobLen = unsign(firstByte) >> 1;
+              var blobStart = start + blockStart + 1;
+              var blobEnd = blobStart + blobLen;
+              return Arrays.copyOfRange(buffer.array(), blobStart, blobEnd);
+          } else {
+              var blobLen = buffer.getInt(start+blockStart) / 2; // why divided by 2? not sure
+              var blobStart = start + blockStart + 4;
+              var blobEnd = blobStart + blobLen;
+              return Arrays.copyOfRange(buffer.array(), blobStart, blobEnd);
+          }
         };
     }
 
@@ -168,4 +177,9 @@ public class Extractors {
         }
         return start+(strLen * charSize);
     }
+
+    private static int unsign(byte value) {
+        return value & 0xff; // Java's bytes are signed while the original algorithm is written for unsigned bytes
+    }
+
 }

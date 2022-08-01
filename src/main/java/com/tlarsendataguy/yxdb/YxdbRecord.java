@@ -53,7 +53,7 @@ public class YxdbRecord {
 
     public void loadFrom(byte[] sourceData, int start, int to) {
         if (to <= start) {
-            throw new IllegalArgumentException("to cannot be greater than start");
+            throw new IllegalArgumentException("to must be greater than start");
         }
         var length = to - start;
         if (buffer == null || buffer.capacity() < length) {

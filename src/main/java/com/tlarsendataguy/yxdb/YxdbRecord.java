@@ -57,6 +57,11 @@ public class YxdbRecord {
                     record.addDoubleExtractor(field.name(), Extractors.NewDoubleExtractor(startAt));
                     startAt += 9;
                     break;
+                case "FixedDecimal":
+                    var size = field.size();
+                    record.addDoubleExtractor(field.name(), Extractors.NewFixedDecimalExtractor(startAt, size));
+                    startAt += size + 1;
+                    break;
             }
         }
         if (varFields > 0) {

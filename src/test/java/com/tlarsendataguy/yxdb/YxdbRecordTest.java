@@ -49,6 +49,13 @@ public class YxdbRecordTest {
         Assertions.assertEquals(1.1, record.extractDoubleFrom(0));
     }
 
+    @Test
+    public void TestReadFixedDecimalRecord() {
+        var record = loadRecordWithValueColumn("FixedDecimal", 10, new byte[]{49, 50, 51, 46, 52, 53, 0, 43, 67, 110, 0});
+
+        Assertions.assertEquals(123.45, record.extractDoubleFrom(0));
+    }
+
     private static YxdbRecord loadRecordWithValueColumn(String type, int size, byte[] sourceData) {
         var fields = new ArrayList<MetaInfoField>(1);
         fields.add(new MetaInfoField("value", type, size, 0));

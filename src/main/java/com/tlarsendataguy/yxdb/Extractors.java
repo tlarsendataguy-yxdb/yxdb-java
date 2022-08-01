@@ -160,7 +160,7 @@ public class Extractors {
     }
 
     private static String getString(ByteBuffer buffer, int start, int fieldLength, int charSize) {
-        int end = getEndOfStringPos(buffer, start, fieldLength, charSize);
+        int end = getEndOfStringPos(buffer.array(), start, fieldLength, charSize);
         if (charSize == 1) {
             return new String(Arrays.copyOfRange(buffer.array(), start, end), StandardCharsets.UTF_8);
         } else {
@@ -168,11 +168,11 @@ public class Extractors {
         }
     }
 
-    private static int getEndOfStringPos(ByteBuffer buffer, int start, int fieldLength, int charSize) {
+    private static int getEndOfStringPos(byte[] buffer, int start, int fieldLength, int charSize) {
         int fieldTo = start + (fieldLength * charSize);
         int strLen = 0;
         for (var i = start; i < fieldTo; i=i+charSize) {
-            if (buffer.get(i) == 0 && buffer.get(i+(charSize-1)) == 0) {
+            if (buffer[i] == 0 && buffer[i+(charSize-1)] == 0) {
                 break;
             }
             strLen++;

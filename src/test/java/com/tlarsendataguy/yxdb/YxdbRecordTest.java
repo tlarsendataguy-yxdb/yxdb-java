@@ -3,6 +3,8 @@ package com.tlarsendataguy.yxdb;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 public class YxdbRecordTest {
@@ -83,9 +85,20 @@ public class YxdbRecordTest {
 
     @Test
     public void TestReadV_WString() {
-        var record = loadRecordWithValueColumn("V_WString", 15, new byte[]{0, 0, 0, 0, 4, 0, 0, 0, 1,2,3,4,5,6,7,8});
+        var record = loadRecordWithValueColumn("V_WString", 1, 15, new byte[]{0, 0, 0, 0, 0, 4, 0, 0, 0, 1,2,3,4,5,6,7,8});
 
         Assertions.assertEquals("", record.extractStringFrom(0));
+    }
+
+    @Test
+    public void TestReadDate() throws ParseException {
+        var record = loadRecordWithValueColumn("Date", 4, 10, new byte[]{0,0,0,0,50,48,50,49,45,48,49,45,48,49,0});
+
+        Assertions.assertEquals(1, record.fields.size());
+        Assertions.assertSame(YxdbField.DataType.DATE, record.fields.get(0).type());
+        Assertions.assertEquals("value", record.fields.get(0).name());
+        Assertions.assertEquals(new SimpleDateFormat("yyyy-MM-dd").parse("2021-01-01"), record.extractDateFrom(0));
+        Assertions.assertEquals(new SimpleDateFormat("yyyy-MM-dd").parse("2021-01-01"), record.extractDateFrom("value"));
     }
 
     private static YxdbRecord loadRecordWithValueColumn(String type, int size, byte[] sourceData) {
@@ -93,6 +106,14 @@ public class YxdbRecordTest {
         fields.add(new MetaInfoField("value", type, size, 0));
         var record = YxdbRecord.newFromFieldList(fields);
         record.loadRecordBlobFrom(sourceData, 0, sourceData.length);
+        return record;
+    }
+
+    private static YxdbRecord loadRecordWithValueColumn(String type, int startAt, int size, byte[] sourceData) {
+        var fields = new ArrayList<MetaInfoField>(1);
+        fields.add(new MetaInfoField("value", type, size, 0));
+        var record = YxdbRecord.newFromFieldList(fields);
+        record.loadRecordBlobFrom(sourceData, startAt, sourceData.length);
         return record;
     }
 }

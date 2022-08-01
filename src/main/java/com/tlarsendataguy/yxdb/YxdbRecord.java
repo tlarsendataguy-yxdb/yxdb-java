@@ -78,6 +78,10 @@ public class YxdbRecord {
                     record.addStringExtractor(field.name(), Extractors.NewV_WStringExtractor(startAt));
                     startAt += 4;
                 }
+                case "Date" -> {
+                    record.addDateExtractor(field.name(), Extractors.NewDateExtractor(startAt));
+                    startAt += 11;
+                }
                 default -> throw new IllegalArgumentException("field type is invalid");
             }
         }
@@ -122,6 +126,15 @@ public class YxdbRecord {
         return extractStringFrom(index);
     }
 
+    public Date extractDateFrom(int index) {
+        return dateExtractors.get(index).apply(buffer);
+    }
+
+    public Date extractDateFrom(String name) {
+        var index = nameToIndex.get(name);
+        return extractDateFrom(index);
+    }
+
     private void addLongExtractor(String name, Function<ByteBuffer, Long> extractor) {
         var index = addFieldNameToIndexMap(name, YxdbField.DataType.LONG);
         longExtractors.put(index, extractor);
@@ -135,6 +148,12 @@ public class YxdbRecord {
     private void addStringExtractor(String name, Function<ByteBuffer, String> extractor) {
         var index = addFieldNameToIndexMap(name, YxdbField.DataType.STRING);
         stringExtractors.put(index, extractor);
+
+    }
+
+    private void addDateExtractor(String name, Function<ByteBuffer, Date> extractor) {
+        var index = addFieldNameToIndexMap(name, YxdbField.DataType.DATE);
+        dateExtractors.put(index, extractor);
 
     }
 

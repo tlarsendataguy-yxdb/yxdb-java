@@ -48,16 +48,18 @@ public class YxdbRecord {
         if (varFields > 0) {
             startSize += 4;
         }
-        record.resizeBufferIfNeeded(startSize);
         return record;
     }
 
     public void loadFrom(byte[] sourceData, int start, int to) {
-        var length = to - start;
-        var array = buffer.array();
-        for (var i = 0; i < length; i++) {
-            array[i] = sourceData[start+i];
+        if (to <= start) {
+            throw new IllegalArgumentException("to cannot be greater than start");
         }
+        var length = to - start;
+        if (buffer == null || buffer.capacity() < length) {
+            buffer = ByteBuffer.allocate(length+100).order(ByteOrder.LITTLE_ENDIAN);
+        }
+        System.arraycopy(sourceData, start, buffer.array(), 0, length);
     }
 
     public Long extractLongFrom(int index) {
@@ -83,11 +85,5 @@ public class YxdbRecord {
         var index = fields.size();
         fields.add(new YxdbField(name, type));
         nameToIndex.put(name, index);
-    }
-
-    private void resizeBufferIfNeeded(int newSize) {
-        if (buffer == null || buffer.capacity() < newSize) {
-            buffer = ByteBuffer.allocate(newSize).order(ByteOrder.LITTLE_ENDIAN);
-        }
     }
 }

@@ -3,6 +3,7 @@ package com.tlarsendataguy.yxdb;
 import java.lang.reflect.Type;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.sql.Array;
 import java.util.*;
 import java.util.function.Function;
 
@@ -13,6 +14,7 @@ public class YxdbRecord {
         boolExtractors = new ArrayList<>(fieldCount);
         byteExtractors = new ArrayList<>(fieldCount);
         longExtractors = new ArrayList<>(fieldCount);
+        doubleExtractors = new ArrayList<>(fieldCount);
         stringExtractors = new ArrayList<>(fieldCount);
         dateExtractors = new ArrayList<>(fieldCount);
         blobExtractors = new ArrayList<>(fieldCount);
@@ -23,6 +25,7 @@ public class YxdbRecord {
     private final List<Function<ByteBuffer,Boolean>> boolExtractors;
     private final List<Function<ByteBuffer,Byte>> byteExtractors;
     private final List<Function<ByteBuffer,Long>> longExtractors;
+    private final List<Function<ByteBuffer,Double>> doubleExtractors;
     private final List<Function<ByteBuffer,String>> stringExtractors;
     private final List<Function<ByteBuffer,Date>> dateExtractors;
     private final List<Function<ByteBuffer,byte[]>> blobExtractors;
@@ -31,26 +34,28 @@ public class YxdbRecord {
     static YxdbRecord newFromFieldList(List<MetaInfoField> fields) throws IllegalArgumentException {
         YxdbRecord record = new YxdbRecord(fields.size());
         int startAt = 0;
-        int startSize = 0;
         int varFields = 0;
         for (MetaInfoField field: fields) {
             switch (field.type()) {
                 case "Int16":
                     record.addLongExtractor(field.name(), Extractors.NewInt16Extractor(startAt));
-                    startSize += 3;
+                    startAt += 3;
                     break;
                 case "Int32":
                     record.addLongExtractor(field.name(), Extractors.NewInt32Extractor(startAt));
-                    startSize += 5;
+                    startAt += 5;
                     break;
                 case "Int64":
                     record.addLongExtractor(field.name(), Extractors.NewInt64Extractor(startAt));
-                    startSize += 9;
+                    startAt += 9;
                     break;
+                case "Float":
+                    record.addDoubleExtractor(field.name(), Extractors.NewFloatExtractor(startAt));
+                    startAt += 5;
             }
         }
         if (varFields > 0) {
-            startSize += 4;
+            startAt += 4;
         }
         return record;
     }
@@ -75,14 +80,35 @@ public class YxdbRecord {
         return extractLongFrom(index);
     }
 
+    public Double extractDoubleFrom(int index) {
+        return doubleExtractors.get(index).apply(buffer);
+    }
+
+    public Double extractDoubleFrom(String name) {
+        var index = nameToIndex.get(name);
+        return extractDoubleFrom(index);
+    }
+
     private void addLongExtractor(String name, Function<ByteBuffer, Long> extractor) {
         boolExtractors.add(null);
         byteExtractors.add(null);
         longExtractors.add(extractor);
+        doubleExtractors.add(null);
         stringExtractors.add(null);
         dateExtractors.add(null);
         blobExtractors.add(null);
         addFieldNameToIndexMap(name, Long.TYPE);
+    }
+
+    private void addDoubleExtractor(String name, Function<ByteBuffer, Double> extractor) {
+        boolExtractors.add(null);
+        byteExtractors.add(null);
+        longExtractors.add(null);
+        doubleExtractors.add(extractor);
+        stringExtractors.add(null);
+        dateExtractors.add(null);
+        blobExtractors.add(null);
+        addFieldNameToIndexMap(name, Double.TYPE);
     }
 
     private void addFieldNameToIndexMap(String name, Type type) {

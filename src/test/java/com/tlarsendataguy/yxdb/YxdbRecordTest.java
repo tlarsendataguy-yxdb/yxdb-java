@@ -31,6 +31,17 @@ public class YxdbRecordTest {
         Assertions.assertEquals(23, record.extractLongFrom(0));
     }
 
+    @Test
+    public void TestReadFloatRecord() {
+        var record = loadRecordWithValueColumn("Float", 4, new byte[]{-51,-52,-116,63,0,0,0,0, 0});
+
+        Assertions.assertEquals(1, record.fields.size());
+        Assertions.assertSame(Double.TYPE, record.fields.get(0).type());
+        Assertions.assertEquals("value", record.fields.get(0).name());
+        Assertions.assertEquals(1.1f, record.extractDoubleFrom(0));
+        Assertions.assertEquals(1.1f, record.extractDoubleFrom("value"));
+    }
+
     private static YxdbRecord loadRecordWithValueColumn(String type, int size, byte[] sourceData) {
         var fields = new ArrayList<MetaInfoField>(1);
         fields.add(new MetaInfoField("value", type, size, 0));

@@ -1,6 +1,5 @@
 package com.tlarsendataguy.yxdb;
 
-import java.lang.reflect.Type;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.*;
@@ -33,49 +32,50 @@ public class YxdbRecord {
     static YxdbRecord newFromFieldList(List<MetaInfoField> fields) throws IllegalArgumentException {
         YxdbRecord record = new YxdbRecord(fields.size());
         int startAt = 0;
-        int varFields = 0;
         int size;
         for (MetaInfoField field: fields) {
             switch (field.type()) {
-                case "Int16":
+                case "Int16" -> {
                     record.addLongExtractor(field.name(), Extractors.NewInt16Extractor(startAt));
                     startAt += 3;
-                    break;
-                case "Int32":
+                }
+                case "Int32" -> {
                     record.addLongExtractor(field.name(), Extractors.NewInt32Extractor(startAt));
                     startAt += 5;
-                    break;
-                case "Int64":
+                }
+                case "Int64" -> {
                     record.addLongExtractor(field.name(), Extractors.NewInt64Extractor(startAt));
                     startAt += 9;
-                    break;
-                case "Float":
+                }
+                case "Float" -> {
                     record.addDoubleExtractor(field.name(), Extractors.NewFloatExtractor(startAt));
                     startAt += 5;
-                    break;
-                case "Double":
+                }
+                case "Double" -> {
                     record.addDoubleExtractor(field.name(), Extractors.NewDoubleExtractor(startAt));
                     startAt += 9;
-                    break;
-                case "FixedDecimal":
+                }
+                case "FixedDecimal" -> {
                     size = field.size();
                     record.addDoubleExtractor(field.name(), Extractors.NewFixedDecimalExtractor(startAt, size));
                     startAt += size + 1;
-                    break;
-                case "String":
+                }
+                case "String" -> {
                     size = field.size();
                     record.addStringExtractor(field.name(), Extractors.NewStringExtractor(startAt, size));
                     startAt += size + 1;
-                    break;
-                case "WString":
+                }
+                case "WString" -> {
                     size = field.size();
                     record.addStringExtractor(field.name(), Extractors.NewWStringExtractor(startAt, size));
                     startAt += (size * 2) + 1;
-                    break;
+                }
+                case "V_String" -> {
+                    record.addStringExtractor(field.name(), Extractors.NewV_StringExtractor(startAt));
+                    startAt += 4;
+                }
+                default -> throw new IllegalArgumentException("field type is invalid");
             }
-        }
-        if (varFields > 0) {
-            startAt += 4;
         }
         return record;
     }

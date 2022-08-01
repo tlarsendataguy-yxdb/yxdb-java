@@ -74,6 +74,13 @@ public class YxdbRecordTest {
         Assertions.assertEquals("hello world!", record.extractStringFrom(0));
     }
 
+    @Test
+    public void TestReadV_String() {
+        var record = loadRecordWithValueColumn("V_String", 15, new byte[]{0, 0, 0, 0, 4, 0, 0, 0, 1,2,3,4,5,6,7,8});
+
+        Assertions.assertEquals("", record.extractStringFrom(0));
+    }
+
     private static YxdbRecord loadRecordWithValueColumn(String type, int size, byte[] sourceData) {
         var fields = new ArrayList<MetaInfoField>(1);
         fields.add(new MetaInfoField("value", type, size, 0));

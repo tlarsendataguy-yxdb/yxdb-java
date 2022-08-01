@@ -86,6 +86,14 @@ public class YxdbRecord {
                     record.addDateExtractor(field.name(), Extractors.NewDateTimeExtractor(startAt));
                     startAt += 20;
                 }
+                case "Bool" -> {
+                    record.addBooleanExtractor(field.name(), Extractors.NewBoolExtractor(startAt));
+                    startAt++;
+                }
+                case "Byte" -> {
+                    record.addByteExtractor(field.name(), Extractors.NewByteExtractor(startAt));
+                    startAt += 2;
+                }
                 default -> throw new IllegalArgumentException("field type is invalid");
             }
         }
@@ -139,6 +147,24 @@ public class YxdbRecord {
         return extractDateFrom(index);
     }
 
+    public Boolean extractBooleanFrom(int index) {
+        return boolExtractors.get(index).apply(buffer);
+    }
+
+    public Boolean extractBooleanFrom(String name) {
+        var index = nameToIndex.get(name);
+        return extractBooleanFrom(index);
+    }
+
+    public Byte extractByteFrom(int index) {
+        return byteExtractors.get(index).apply(buffer);
+    }
+
+    public Byte extractByteFrom(String name) {
+        var index = nameToIndex.get(name);
+        return extractByteFrom(index);
+    }
+
     private void addLongExtractor(String name, Function<ByteBuffer, Long> extractor) {
         var index = addFieldNameToIndexMap(name, YxdbField.DataType.LONG);
         longExtractors.put(index, extractor);
@@ -159,6 +185,16 @@ public class YxdbRecord {
         var index = addFieldNameToIndexMap(name, YxdbField.DataType.DATE);
         dateExtractors.put(index, extractor);
 
+    }
+
+    private void addBooleanExtractor(String name, Function<ByteBuffer, Boolean> extractor) {
+        var index = addFieldNameToIndexMap(name, YxdbField.DataType.BOOLEAN);
+        boolExtractors.put(index, extractor);
+    }
+
+    private void addByteExtractor(String name, Function<ByteBuffer, Byte> extractor) {
+        var index = addFieldNameToIndexMap(name, YxdbField.DataType.BYTE);
+        byteExtractors.put(index, extractor);
     }
 
     private int addFieldNameToIndexMap(String name, YxdbField.DataType type) {

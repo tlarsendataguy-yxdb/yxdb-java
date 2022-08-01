@@ -108,6 +108,28 @@ public class YxdbRecordTest {
         Assertions.assertEquals(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse("2021-01-02 03:04:05"), record.extractDateFrom(0));
     }
 
+    @Test
+    public void TestReadBool() {
+        var record = loadRecordWithValueColumn("Bool", 1, new byte[]{1});
+
+        Assertions.assertEquals(1, record.fields.size());
+        Assertions.assertSame(YxdbField.DataType.BOOLEAN, record.fields.get(0).type());
+        Assertions.assertEquals("value", record.fields.get(0).name());
+        Assertions.assertTrue(record.extractBooleanFrom(0));
+        Assertions.assertTrue(record.extractBooleanFrom("value"));
+    }
+
+    @Test
+    public void TestReadByte() {
+        var record = loadRecordWithValueColumn("Byte", 2, new byte[]{23, 0});
+
+        Assertions.assertEquals(1, record.fields.size());
+        Assertions.assertSame(YxdbField.DataType.BYTE, record.fields.get(0).type());
+        Assertions.assertEquals("value", record.fields.get(0).name());
+        Assertions.assertEquals((byte)23, record.extractByteFrom(0));
+        Assertions.assertEquals((byte)23, record.extractByteFrom("value"));
+    }
+
     private static YxdbRecord loadRecordWithValueColumn(String type, int size, byte[] sourceData) {
         var fields = new ArrayList<MetaInfoField>(1);
         fields.add(new MetaInfoField("value", type, size, 0));

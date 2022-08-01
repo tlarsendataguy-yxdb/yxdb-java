@@ -200,10 +200,18 @@ public class ExtractorsTest {
     }
 
     @Test
-    public void Sandbox() {
-        var value = "123.45";
+    public void ExtractWString() {
+        var extract = Extractors.NewWStringExtractor(2, 15);
+        String result = extractFromBuffer(extract, new byte[]{0, 0, 104, 0, 101, 0, 108, 0, 108, 0, 111, 0, 32, 0, 119, 0, 111, 0, 114, 0, 108, 0, 100, 0, 0, 0, 12, 0, 44, 0, 0});
 
-        System.out.println(Arrays.toString(value.getBytes(StandardCharsets.UTF_8)));
+        Assertions.assertEquals("hello world", result);
+    }
+
+    @Test
+    public void Sandbox() {
+        var value = "hello world";
+
+        System.out.println(Arrays.toString(value.getBytes(StandardCharsets.UTF_16LE)));
 
     }
 

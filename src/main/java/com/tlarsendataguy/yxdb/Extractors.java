@@ -117,6 +117,21 @@ public class Extractors {
         };
     }
 
+    public static Function<ByteBuffer, String> NewWStringExtractor(int start, int fieldLength) {
+        return (buffer) -> {
+            int strLen = 0;
+            var fieldTo = start + (fieldLength * 2);
+            for (var i = start; i < fieldTo; i=i+2) {
+                if (buffer.get(i) == 0 && buffer.get(i+1) == 0) {
+                    break;
+                }
+                strLen++;
+            }
+            var end = start + (strLen * 2);
+            return new String(Arrays.copyOfRange(buffer.array(), start, end), StandardCharsets.UTF_16LE);
+        };
+    }
+
     private static Date parseDate(ByteBuffer buffer, int start, int length, DateFormat format) {
         var str = new String(buffer.array(), start, length, StandardCharsets.UTF_8);
         try {

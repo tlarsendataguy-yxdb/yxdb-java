@@ -126,28 +126,50 @@ public class Extractors {
         };
     }
 
-    public static Function<ByteBuffer, byte[]> NewBlobExtractor(int start) {
+    public static Function<ByteBuffer, String> NewV_StringExtractor(int start) {
         return (buffer) -> {
-            var fixedPortion = buffer.getInt(start);
-            if (fixedPortion == 0) {
-                return new byte[]{};
-            }
-            if (fixedPortion == 1) {
+            var bytes = parseBlob(buffer, start);
+            if (bytes == null) {
                 return null;
             }
-
-            if (isTiny(fixedPortion)) {
-                return getTinyBlob(start, buffer);
-            }
-
-            var blockStart = start + (fixedPortion & 0x7fffffff);
-            var blockFirstByte = buffer.get(blockStart);
-            if (isSmallBlock(blockFirstByte)) {
-                return getSmallBlob(buffer, blockStart);
-            } else {
-                return getNormalBlob(buffer, blockStart);
-            }
+            return new String(bytes, StandardCharsets.UTF_8);
         };
+    }
+
+    public static Function<ByteBuffer, String> NewV_WStringExtractor(int start) {
+        return (buffer) -> {
+            var bytes = parseBlob(buffer, start);
+            if (bytes == null) {
+                return null;
+            }
+            return new String(bytes, StandardCharsets.UTF_16LE);
+        };
+    }
+
+    public static Function<ByteBuffer, byte[]> NewBlobExtractor(int start) {
+        return (buffer) -> parseBlob(buffer, start);
+    }
+
+    private static byte[] parseBlob(ByteBuffer buffer, int start) {
+        var fixedPortion = buffer.getInt(start);
+        if (fixedPortion == 0) {
+            return new byte[]{};
+        }
+        if (fixedPortion == 1) {
+            return null;
+        }
+
+        if (isTiny(fixedPortion)) {
+            return getTinyBlob(start, buffer);
+        }
+
+        var blockStart = start + (fixedPortion & 0x7fffffff);
+        var blockFirstByte = buffer.get(blockStart);
+        if (isSmallBlock(blockFirstByte)) {
+            return getSmallBlob(buffer, blockStart);
+        } else {
+            return getNormalBlob(buffer, blockStart);
+        }
     }
 
     private static Date parseDate(ByteBuffer buffer, int start, int length, DateFormat format) {

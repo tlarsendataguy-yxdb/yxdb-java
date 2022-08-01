@@ -52,6 +52,11 @@ public class YxdbRecord {
                 case "Float":
                     record.addDoubleExtractor(field.name(), Extractors.NewFloatExtractor(startAt));
                     startAt += 5;
+                    break;
+                case "Double":
+                    record.addDoubleExtractor(field.name(), Extractors.NewDoubleExtractor(startAt));
+                    startAt += 9;
+                    break;
             }
         }
         if (varFields > 0) {

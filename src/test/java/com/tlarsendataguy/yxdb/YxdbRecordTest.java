@@ -42,6 +42,13 @@ public class YxdbRecordTest {
         Assertions.assertEquals(1.1f, record.extractDoubleFrom("value"));
     }
 
+    @Test
+    public void TestReadDoubleRecord() {
+        var record = loadRecordWithValueColumn("Double", 8, new byte[]{-102,-103,-103,-103,-103,-103,-15,63,0});
+
+        Assertions.assertEquals(1.1, record.extractDoubleFrom(0));
+    }
+
     private static YxdbRecord loadRecordWithValueColumn(String type, int size, byte[] sourceData) {
         var fields = new ArrayList<MetaInfoField>(1);
         fields.add(new MetaInfoField("value", type, size, 0));

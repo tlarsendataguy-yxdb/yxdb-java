@@ -132,7 +132,7 @@ public class Extractors {
           if (blockStart == 1) {
               return null;
           }
-          var blobLen = buffer.getInt(start+blockStart);
+          var blobLen = buffer.getInt(start+blockStart) / 2; // why divided by 2? not sure
           var blobStart = start + blockStart + 4;
           var blobEnd = blobStart + blobLen;
           return Arrays.copyOfRange(buffer.array(), blobStart, blobEnd);

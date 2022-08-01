@@ -85,12 +85,7 @@ public class Extractors {
             if (buffer.get(start+10) == 1) {
                 return null;
             }
-            var str = new String(buffer.array(), start, 10, StandardCharsets.UTF_8);
-            try {
-                return date.parse(str);
-            } catch (ParseException ex) {
-                return null;
-            }
+            return parseDate(buffer, start, 10, date);
         };
     }
 
@@ -99,12 +94,7 @@ public class Extractors {
             if (buffer.get(start+19) == 1) {
                 return null;
             }
-            var str = new String(buffer.array(), start, 19, StandardCharsets.UTF_8);
-            try {
-                return dateTime.parse(str);
-            } catch (ParseException ex) {
-                return null;
-            }
+            return parseDate(buffer, start, 19, dateTime);
         };
     }
 
@@ -113,6 +103,15 @@ public class Extractors {
             int end = getEndOfStringPos(buffer, start, length);
             return new String(Arrays.copyOfRange(buffer.array(), start, end), StandardCharsets.UTF_8);
         };
+    }
+
+    private static Date parseDate(ByteBuffer buffer, int start, int length, DateFormat format) {
+        var str = new String(buffer.array(), start, length, StandardCharsets.UTF_8);
+        try {
+            return format.parse(str);
+        } catch (ParseException ex) {
+            return null;
+        }
     }
 
     private static int getEndOfStringPos(ByteBuffer buffer, int start, int fieldLength) {

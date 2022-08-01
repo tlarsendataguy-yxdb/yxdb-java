@@ -133,17 +133,11 @@ public class Extractors {
               return null;
           }
 
-          var firstByte = buffer.get(start + blockStart);
-          if ((firstByte & 1) == 1) {
-              var blobLen = unsign(firstByte) >> 1;
-              var blobStart = start + blockStart + 1;
-              var blobEnd = blobStart + blobLen;
-              return Arrays.copyOfRange(buffer.array(), blobStart, blobEnd);
+          var blockFirstByte = buffer.get(start + blockStart);
+          if (isSmallBlock(blockFirstByte)) {
+              return getSmallBlob(start, buffer, blockStart);
           } else {
-              var blobLen = buffer.getInt(start+blockStart) / 2; // why divided by 2? not sure
-              var blobStart = start + blockStart + 4;
-              var blobEnd = blobStart + blobLen;
-              return Arrays.copyOfRange(buffer.array(), blobStart, blobEnd);
+              return getNormalBlob(start, buffer, blockStart);
           }
         };
     }
@@ -176,6 +170,25 @@ public class Extractors {
             strLen++;
         }
         return start+(strLen * charSize);
+    }
+
+    private static boolean isSmallBlock(byte value) {
+        return (value & 1) == 1;
+    }
+
+    private static byte[] getNormalBlob(int start, ByteBuffer buffer, int blockStart) {
+        var blobLen = buffer.getInt(start + blockStart) / 2; // why divided by 2? not sure
+        var blobStart = start + blockStart + 4;
+        var blobEnd = blobStart + blobLen;
+        return Arrays.copyOfRange(buffer.array(), blobStart, blobEnd);
+    }
+
+    private static byte[] getSmallBlob(int start, ByteBuffer buffer, int blockStart) {
+        var blockFirstByte = buffer.get(start + blockStart);
+        var blobLen = unsign(blockFirstByte) >> 1;
+        var blobStart = start + blockStart + 1;
+        var blobEnd = blobStart + blobLen;
+        return Arrays.copyOfRange(buffer.array(), blobStart, blobEnd);
     }
 
     private static int unsign(byte value) {

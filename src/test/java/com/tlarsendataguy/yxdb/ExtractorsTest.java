@@ -232,11 +232,27 @@ public class ExtractorsTest {
     }
 
     @Test
-    public void Sandbox() {
-        var value = "hello world";
+    public void ExtractNormalBlob() {
+        var extract = Extractors.NewBlobExtractor(2);
+        byte[] result = extractFromBuffer(extract, new byte[]{0, 0, 4, 0, 0, 0, 4, 0, 0, 0, 1,2,3,4,5,6,7,8});
 
-        System.out.println(Arrays.toString(value.getBytes(StandardCharsets.UTF_16LE)));
+        Assertions.assertArrayEquals(result, new byte[]{1, 2, 3, 4});
+    }
 
+    @Test
+    public void ExtractEmptyBlob() {
+        var extract = Extractors.NewBlobExtractor(2);
+        byte[] result = extractFromBuffer(extract, new byte[]{0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 1,2,3,4,5,6,7,8});
+
+        Assertions.assertArrayEquals(result, new byte[]{});
+    }
+
+    @Test
+    public void ExtractNullBlob() {
+        var extract = Extractors.NewBlobExtractor(2);
+        byte[] result = extractFromBuffer(extract, new byte[]{0, 0, 1, 0, 0, 0, 4, 0, 0, 0, 1,2,3,4,5,6,7,8});
+
+        Assertions.assertNull(result);
     }
 
     private static <T> T extractFromBuffer(Function<ByteBuffer, T> extract, byte[] data){

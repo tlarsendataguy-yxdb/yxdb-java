@@ -126,6 +126,19 @@ public class Extractors {
         };
     }
 
+    public static Function<ByteBuffer, byte[]> NewBlobExtractor(int start) {
+        return (buffer) -> {
+          var blockStart = buffer.getInt(start);
+          if (blockStart == 1) {
+              return null;
+          }
+          var blobLen = buffer.getInt(start+blockStart);
+          var blobStart = start + blockStart + 4;
+          var blobEnd = blobStart + blobLen;
+          return Arrays.copyOfRange(buffer.array(), blobStart, blobEnd);
+        };
+    }
+
     private static Date parseDate(ByteBuffer buffer, int start, int length, DateFormat format) {
         var str = new String(buffer.array(), start, length, StandardCharsets.UTF_8);
         try {

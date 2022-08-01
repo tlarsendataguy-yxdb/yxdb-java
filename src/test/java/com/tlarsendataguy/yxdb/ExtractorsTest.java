@@ -202,9 +202,17 @@ public class ExtractorsTest {
     @Test
     public void ExtractWString() {
         var extract = Extractors.NewWStringExtractor(2, 15);
-        String result = extractFromBuffer(extract, new byte[]{0, 0, 104, 0, 101, 0, 108, 0, 108, 0, 111, 0, 32, 0, 119, 0, 111, 0, 114, 0, 108, 0, 100, 0, 0, 0, 12, 0, 44, 0, 0});
+        String result = extractFromBuffer(extract, new byte[]{0, 0, 104, 0, 101, 0, 108, 0, 108, 0, 111, 0, 32, 0, 119, 0, 111, 0, 114, 0, 108, 0, 100, 0, 0, 0, 12, 0, 44, 0, 55, 0, 0});
 
         Assertions.assertEquals("hello world", result);
+    }
+
+    @Test
+    public void ExtractNullWString() {
+        var extract = Extractors.NewWStringExtractor(2, 15);
+        String result = extractFromBuffer(extract, new byte[]{0, 0, 104, 0, 101, 0, 108, 0, 108, 0, 111, 0, 32, 0, 119, 0, 111, 0, 114, 0, 108, 0, 100, 0, 0, 0, 12, 0, 44, 0, 55, 0, 1});
+
+        Assertions.assertNull(result);
     }
 
     @Test

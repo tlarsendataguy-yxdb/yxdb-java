@@ -67,7 +67,7 @@ public class Extractors {
             if (buffer.get(start + fieldLength) == 1){
                 return null;
             }
-            var str = getString(buffer, start, fieldLength);
+            var str = getString(buffer, start, fieldLength, 1);
             return Double.parseDouble(str);
         };
     }
@@ -113,22 +113,16 @@ public class Extractors {
             if (buffer.get(start+fieldLength) == 1) {
                 return null;
             }
-            return getString(buffer, start, fieldLength);
+            return getString(buffer, start, fieldLength, 1);
         };
     }
 
     public static Function<ByteBuffer, String> NewWStringExtractor(int start, int fieldLength) {
         return (buffer) -> {
-            int strLen = 0;
-            var fieldTo = start + (fieldLength * 2);
-            for (var i = start; i < fieldTo; i=i+2) {
-                if (buffer.get(i) == 0 && buffer.get(i+1) == 0) {
-                    break;
-                }
-                strLen++;
+            if (buffer.get(start + (fieldLength*2))==1) {
+                return null;
             }
-            var end = start + (strLen * 2);
-            return new String(Arrays.copyOfRange(buffer.array(), start, end), StandardCharsets.UTF_16LE);
+            return getString(buffer, start, fieldLength, 2);
         };
     }
 
@@ -141,20 +135,24 @@ public class Extractors {
         }
     }
 
-    private static String getString(ByteBuffer buffer, int start, int fieldLength) {
-        int end = getEndOfStringPos(buffer, start, fieldLength);
-        return new String(Arrays.copyOfRange(buffer.array(), start, end), StandardCharsets.UTF_8);
+    private static String getString(ByteBuffer buffer, int start, int fieldLength, int charSize) {
+        int end = getEndOfStringPos(buffer, start, fieldLength, charSize);
+        if (charSize == 1) {
+            return new String(Arrays.copyOfRange(buffer.array(), start, end), StandardCharsets.UTF_8);
+        } else {
+            return new String(Arrays.copyOfRange(buffer.array(), start, end), StandardCharsets.UTF_16LE);
+        }
     }
 
-    private static int getEndOfStringPos(ByteBuffer buffer, int start, int fieldLength) {
-        int fieldTo = start + fieldLength;
+    private static int getEndOfStringPos(ByteBuffer buffer, int start, int fieldLength, int charSize) {
+        int fieldTo = start + (fieldLength * charSize);
         int strLen = 0;
-        for (var i = start; i < fieldTo; i++) {
-            if (buffer.get(i) == 0) {
+        for (var i = start; i < fieldTo; i=i+charSize) {
+            if (buffer.get(i) == 0 && buffer.get(i+(charSize-1)) == 0) {
                 break;
             }
             strLen++;
         }
-        return start+strLen;
+        return start+(strLen * charSize);
     }
 }

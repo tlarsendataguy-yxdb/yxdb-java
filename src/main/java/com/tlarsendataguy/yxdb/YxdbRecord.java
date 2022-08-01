@@ -35,10 +35,14 @@ public class YxdbRecord {
         int varFields = 0;
         for (MetaInfoField field: fields) {
             switch (field.type()) {
+                case "Int16":
+                    record.addLongExtractor(field.name(), Extractors.NewInt16Extractor(startAt));
+                    startSize += 3;
+                    break;
                 case "Int32":
-                    record.addLongExtractor(startAt);
-                    record.addFieldNameToIndexMap(field.name(), Long.TYPE);
+                    record.addLongExtractor(field.name(), Extractors.NewInt32Extractor(startAt));
                     startSize += 5;
+                    break;
             }
         }
         if (varFields > 0) {
@@ -60,13 +64,14 @@ public class YxdbRecord {
         return longExtractors.get(index).apply(buffer);
     }
 
-    private void addLongExtractor(int startAt) {
+    private void addLongExtractor(String name, Function<ByteBuffer, Long> extractor) {
         boolExtractors.add(null);
         byteExtractors.add(null);
-        longExtractors.add(Extractors.NewInt32Extractor(startAt));
+        longExtractors.add(extractor);
         stringExtractors.add(null);
         dateExtractors.add(null);
         blobExtractors.add(null);
+        addFieldNameToIndexMap(name, Long.TYPE);
     }
 
     private void addFieldNameToIndexMap(String name, Type type) {

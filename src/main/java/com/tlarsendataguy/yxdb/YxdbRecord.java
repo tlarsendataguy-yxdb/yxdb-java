@@ -82,6 +82,10 @@ public class YxdbRecord {
                     record.addDateExtractor(field.name(), Extractors.NewDateExtractor(startAt));
                     startAt += 11;
                 }
+                case "DateTime" -> {
+                    record.addDateExtractor(field.name(), Extractors.NewDateTimeExtractor(startAt));
+                    startAt += 20;
+                }
                 default -> throw new IllegalArgumentException("field type is invalid");
             }
         }

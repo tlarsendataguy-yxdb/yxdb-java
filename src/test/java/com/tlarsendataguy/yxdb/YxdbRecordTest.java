@@ -101,6 +101,13 @@ public class YxdbRecordTest {
         Assertions.assertEquals(new SimpleDateFormat("yyyy-MM-dd").parse("2021-01-01"), record.extractDateFrom("value"));
     }
 
+    @Test
+    public void TestReadDateTime() throws ParseException {
+        var record = loadRecordWithValueColumn("DateTime", 4, 10, new byte[]{0,0,0,0,50,48,50,49,45,48,49,45,48,50,32,48,51,58,48,52,58,48,53,0});
+
+        Assertions.assertEquals(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse("2021-01-02 03:04:05"), record.extractDateFrom(0));
+    }
+
     private static YxdbRecord loadRecordWithValueColumn(String type, int size, byte[] sourceData) {
         var fields = new ArrayList<MetaInfoField>(1);
         fields.add(new MetaInfoField("value", type, size, 0));

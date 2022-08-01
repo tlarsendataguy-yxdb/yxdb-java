@@ -100,6 +100,9 @@ public class Extractors {
 
     public static Function<ByteBuffer, String> NewStringExtractor(int start, int length) {
         return (buffer) -> {
+            if (buffer.get(start+length) == 1) {
+                return null;
+            }
             int end = getEndOfStringPos(buffer, start, length);
             return new String(Arrays.copyOfRange(buffer.array(), start, end), StandardCharsets.UTF_8);
         };

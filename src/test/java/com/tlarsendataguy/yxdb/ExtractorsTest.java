@@ -176,6 +176,14 @@ public class ExtractorsTest {
     }
 
     @Test
+    public void ExtractNullString() {
+        var extract = Extractors.NewStringExtractor(2, 5);
+        String result = extractFromBuffer(extract, new byte[]{0, 0, 104, 101, 108, 108, 111, 1});
+
+        Assertions.assertNull(result);
+    }
+
+    @Test
     public void Sandbox() {
         var value = "hello world!";
 

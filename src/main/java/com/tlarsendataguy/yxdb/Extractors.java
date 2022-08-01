@@ -6,6 +6,7 @@ import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.function.Function;
 
@@ -104,6 +105,20 @@ public class Extractors {
             } catch (ParseException ex) {
                 return null;
             }
+        };
+    }
+
+    public static Function<ByteBuffer, String> NewStringExtractor(int start, int length) {
+        return (buffer) -> {
+            int to = start + length;
+            int strLen = 0;
+            for (var i = start; i < to; i++) {
+                if (buffer.get(i) == 0) {
+                    break;
+                }
+                strLen++;
+            }
+            return new String(Arrays.copyOfRange(buffer.array(), start, start+strLen), StandardCharsets.UTF_8);
         };
     }
 }

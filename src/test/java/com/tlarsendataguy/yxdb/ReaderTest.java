@@ -29,30 +29,6 @@ public class ReaderTest {
         }
     }
 
-    @Test
-    public void TestXml() throws IOException, SAXException, ParserConfigurationException {
-        DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-        Document doc = builder.parse(new InputSource(new StringReader(AllNormalFieldsMetaXml)));
-        doc.getDocumentElement().normalize();
-
-        var info = doc.getElementsByTagName("RecordInfo").item(0);
-        System.out.println(info.getNodeName());
-        var nodes = info.getChildNodes();
-
-        for (int i = 0; i < nodes.getLength(); i++) {
-            var field = nodes.item(i);
-            if (field.getNodeType() != Node.ELEMENT_NODE) {
-                continue;
-            }
-            var attributes = field.getAttributes();
-            System.out.println(attributes.getNamedItem("name").getNodeValue());
-            var size = attributes.getNamedItem("size");
-            if (size != null) {
-                System.out.println(field.getAttributes().getNamedItem("size").getNodeValue());
-            }
-        }
-    }
-
     String AllNormalFieldsMetaXml = """
 <RecordInfo>
 	<Field name="ByteField" source="TextInput:" type="Byte"/>

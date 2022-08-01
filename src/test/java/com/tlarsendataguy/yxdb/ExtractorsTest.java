@@ -160,8 +160,24 @@ public class ExtractorsTest {
     }
 
     @Test
+    public void ExtractString() {
+        var extract = Extractors.NewStringExtractor(2, 15);
+        String result = extractFromBuffer(extract, new byte[]{0, 0, 104, 101, 108, 108, 111, 32, 119, 111, 114, 108, 100, 33, 0, 23, 77, 0});
+
+        Assertions.assertEquals("hello world!", result);
+    }
+
+    @Test
+    public void ExtractFullString() {
+        var extract = Extractors.NewStringExtractor(2, 5);
+        String result = extractFromBuffer(extract, new byte[]{0, 0, 104, 101, 108, 108, 111, 0});
+
+        Assertions.assertEquals("hello", result);
+    }
+
+    @Test
     public void Sandbox() {
-        var value = "2021-01-02 03:04:05";
+        var value = "hello world!";
 
         System.out.println(Arrays.toString(value.getBytes(StandardCharsets.UTF_8)));
 

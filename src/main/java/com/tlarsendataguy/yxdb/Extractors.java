@@ -110,15 +110,20 @@ public class Extractors {
 
     public static Function<ByteBuffer, String> NewStringExtractor(int start, int length) {
         return (buffer) -> {
-            int to = start + length;
-            int strLen = 0;
-            for (var i = start; i < to; i++) {
-                if (buffer.get(i) == 0) {
-                    break;
-                }
-                strLen++;
-            }
-            return new String(Arrays.copyOfRange(buffer.array(), start, start+strLen), StandardCharsets.UTF_8);
+            int end = getEndOfStringPos(buffer, start, length);
+            return new String(Arrays.copyOfRange(buffer.array(), start, end), StandardCharsets.UTF_8);
         };
+    }
+
+    private static int getEndOfStringPos(ByteBuffer buffer, int start, int fieldLength) {
+        int fieldTo = start + fieldLength;
+        int strLen = 0;
+        for (var i = start; i < fieldTo; i++) {
+            if (buffer.get(i) == 0) {
+                break;
+            }
+            strLen++;
+        }
+        return start+strLen;
     }
 }

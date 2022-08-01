@@ -128,17 +128,25 @@ public class Extractors {
 
     public static Function<ByteBuffer, byte[]> NewBlobExtractor(int start) {
         return (buffer) -> {
-          var blockStart = buffer.getInt(start);
-          if (blockStart == 1) {
-              return null;
-          }
+            var fixedPortion = buffer.getInt(start);
+            if (fixedPortion == 0) {
+                return new byte[]{};
+            }
+            if (fixedPortion == 1) {
+                return null;
+            }
 
-          var blockFirstByte = buffer.get(start + blockStart);
-          if (isSmallBlock(blockFirstByte)) {
-              return getSmallBlob(start, buffer, blockStart);
-          } else {
-              return getNormalBlob(start, buffer, blockStart);
-          }
+            if (isTiny(fixedPortion)) {
+                return getTinyBlob(start, buffer);
+            }
+
+            var blockStart = start + (fixedPortion & 0x7fffffff);
+            var blockFirstByte = buffer.get(blockStart);
+            if (isSmallBlock(blockFirstByte)) {
+                return getSmallBlob(buffer, blockStart);
+            } else {
+                return getNormalBlob(buffer, blockStart);
+            }
         };
     }
 
@@ -172,27 +180,39 @@ public class Extractors {
         return start+(strLen * charSize);
     }
 
+    private static boolean isTiny(int fixedPortion) {
+        var bitCheck1 = fixedPortion & 0x80000000;
+        var bitCheck2 = fixedPortion & 0x30000000;
+        return bitCheck1 == 0 && bitCheck2 != 0;
+    }
+
     private static boolean isSmallBlock(byte value) {
         return (value & 1) == 1;
     }
 
-    private static byte[] getNormalBlob(int start, ByteBuffer buffer, int blockStart) {
-        var blobLen = buffer.getInt(start + blockStart) / 2; // why divided by 2? not sure
-        var blobStart = start + blockStart + 4;
+    private static byte[] getNormalBlob(ByteBuffer buffer, int blockStart) {
+        var blobLen = buffer.getInt(blockStart) / 2; // why divided by 2? not sure
+        var blobStart = blockStart + 4;
         var blobEnd = blobStart + blobLen;
         return Arrays.copyOfRange(buffer.array(), blobStart, blobEnd);
     }
 
-    private static byte[] getSmallBlob(int start, ByteBuffer buffer, int blockStart) {
-        var blockFirstByte = buffer.get(start + blockStart);
+    private static byte[] getSmallBlob(ByteBuffer buffer, int blockStart) {
+        var blockFirstByte = buffer.get(blockStart);
         var blobLen = unsign(blockFirstByte) >> 1;
-        var blobStart = start + blockStart + 1;
+        var blobStart = blockStart + 1;
         var blobEnd = blobStart + blobLen;
         return Arrays.copyOfRange(buffer.array(), blobStart, blobEnd);
+    }
+
+    private static byte[] getTinyBlob(int start, ByteBuffer buffer) {
+        var intVal = buffer.getInt(start);
+        var length = intVal >> 28;
+        var end = start + length;
+        return Arrays.copyOfRange(buffer.array(), start, end);
     }
 
     private static int unsign(byte value) {
         return value & 0xff; // Java's bytes are signed while the original algorithm is written for unsigned bytes
     }
-
 }

@@ -184,8 +184,24 @@ public class ExtractorsTest {
     }
 
     @Test
+    public void ExtractFixedDecimal() {
+        var extract = Extractors.NewFixedDecimalExtractor(2, 10);
+        Double result = extractFromBuffer(extract, new byte[]{0, 0, 49, 50, 51, 46, 52, 53, 0, 43, 67, 110, 0});
+
+        Assertions.assertEquals(123.45, result);
+    }
+
+    @Test
+    public void ExtractNullFixedDecimal() {
+        var extract = Extractors.NewFixedDecimalExtractor(2, 10);
+        Double result = extractFromBuffer(extract, new byte[]{0, 0, 49, 50, 51, 46, 52, 53, 0, 43, 67, 110, 1});
+
+        Assertions.assertNull(result);
+    }
+
+    @Test
     public void Sandbox() {
-        var value = "hello world!";
+        var value = "123.45";
 
         System.out.println(Arrays.toString(value.getBytes(StandardCharsets.UTF_8)));
 

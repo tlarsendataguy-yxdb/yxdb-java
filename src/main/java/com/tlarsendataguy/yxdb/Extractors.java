@@ -62,6 +62,16 @@ public class Extractors {
         };
     }
 
+    public static Function<ByteBuffer, Double> NewFixedDecimalExtractor(int start, int fieldLength) {
+        return (buffer) -> {
+            if (buffer.get(start + fieldLength) == 1){
+                return null;
+            }
+            var str = getString(buffer, start, fieldLength);
+            return Double.parseDouble(str);
+        };
+    }
+
     public static Function<ByteBuffer, Double> NewFloatExtractor(int start) {
         return (buffer) -> {
             if (buffer.get(start+4) == 1) {
@@ -98,13 +108,12 @@ public class Extractors {
         };
     }
 
-    public static Function<ByteBuffer, String> NewStringExtractor(int start, int length) {
+    public static Function<ByteBuffer, String> NewStringExtractor(int start, int fieldLength) {
         return (buffer) -> {
-            if (buffer.get(start+length) == 1) {
+            if (buffer.get(start+fieldLength) == 1) {
                 return null;
             }
-            int end = getEndOfStringPos(buffer, start, length);
-            return new String(Arrays.copyOfRange(buffer.array(), start, end), StandardCharsets.UTF_8);
+            return getString(buffer, start, fieldLength);
         };
     }
 
@@ -115,6 +124,11 @@ public class Extractors {
         } catch (ParseException ex) {
             return null;
         }
+    }
+
+    private static String getString(ByteBuffer buffer, int start, int fieldLength) {
+        int end = getEndOfStringPos(buffer, start, fieldLength);
+        return new String(Arrays.copyOfRange(buffer.array(), start, end), StandardCharsets.UTF_8);
     }
 
     private static int getEndOfStringPos(ByteBuffer buffer, int start, int fieldLength) {

@@ -74,6 +74,10 @@ public class YxdbRecord {
                     record.addStringExtractor(field.name(), Extractors.NewV_StringExtractor(startAt));
                     startAt += 4;
                 }
+                case "V_WString" -> {
+                    record.addStringExtractor(field.name(), Extractors.NewV_WStringExtractor(startAt));
+                    startAt += 4;
+                }
                 default -> throw new IllegalArgumentException("field type is invalid");
             }
         }

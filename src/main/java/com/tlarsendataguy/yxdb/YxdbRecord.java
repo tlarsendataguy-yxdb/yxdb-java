@@ -64,6 +64,11 @@ public class YxdbRecord {
         return longExtractors.get(index).apply(buffer);
     }
 
+    public Long extractLongFrom(String name) {
+        var index = nameToIndex.get(name);
+        return extractLongFrom(index);
+    }
+
     private void addLongExtractor(String name, Function<ByteBuffer, Long> extractor) {
         boolExtractors.add(null);
         byteExtractors.add(null);

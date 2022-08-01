@@ -36,5 +36,6 @@ public class YxdbRecordTest {
         record.loadFrom(sourceData, 0, 3);
 
         Assertions.assertEquals(23, record.extractLongFrom(0));
+        Assertions.assertEquals(23, record.extractLongFrom("value"));
     }
 }

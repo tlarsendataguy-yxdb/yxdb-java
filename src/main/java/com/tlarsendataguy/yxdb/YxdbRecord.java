@@ -11,24 +11,24 @@ public class YxdbRecord {
     private YxdbRecord(int fieldCount){
         nameToIndex = new HashMap<>(fieldCount);
         fields = new ArrayList<>(fieldCount);
-        boolExtractors = new ArrayList<>(fieldCount);
-        byteExtractors = new ArrayList<>(fieldCount);
-        longExtractors = new ArrayList<>(fieldCount);
-        doubleExtractors = new ArrayList<>(fieldCount);
-        stringExtractors = new ArrayList<>(fieldCount);
-        dateExtractors = new ArrayList<>(fieldCount);
-        blobExtractors = new ArrayList<>(fieldCount);
+        boolExtractors = new HashMap<>(fieldCount);
+        byteExtractors = new HashMap<>(fieldCount);
+        longExtractors = new HashMap<>(fieldCount);
+        doubleExtractors = new HashMap<>(fieldCount);
+        stringExtractors = new HashMap<>(fieldCount);
+        dateExtractors = new HashMap<>(fieldCount);
+        blobExtractors = new HashMap<>(fieldCount);
     }
     public final List<YxdbField> fields;
     private ByteBuffer buffer;
     private final Map<String, Integer> nameToIndex;
-    private final List<Function<ByteBuffer,Boolean>> boolExtractors;
-    private final List<Function<ByteBuffer,Byte>> byteExtractors;
-    private final List<Function<ByteBuffer,Long>> longExtractors;
-    private final List<Function<ByteBuffer,Double>> doubleExtractors;
-    private final List<Function<ByteBuffer,String>> stringExtractors;
-    private final List<Function<ByteBuffer,Date>> dateExtractors;
-    private final List<Function<ByteBuffer,byte[]>> blobExtractors;
+    private final Map<Integer, Function<ByteBuffer,Boolean>> boolExtractors;
+    private final Map<Integer, Function<ByteBuffer,Byte>> byteExtractors;
+    private final Map<Integer, Function<ByteBuffer,Long>> longExtractors;
+    private final Map<Integer, Function<ByteBuffer,Double>> doubleExtractors;
+    private final Map<Integer, Function<ByteBuffer,String>> stringExtractors;
+    private final Map<Integer, Function<ByteBuffer,Date>> dateExtractors;
+    private final Map<Integer, Function<ByteBuffer,byte[]>> blobExtractors;
 
 
     static YxdbRecord newFromFieldList(List<MetaInfoField> fields) throws IllegalArgumentException {
@@ -100,30 +100,19 @@ public class YxdbRecord {
     }
 
     private void addLongExtractor(String name, Function<ByteBuffer, Long> extractor) {
-        boolExtractors.add(null);
-        byteExtractors.add(null);
-        longExtractors.add(extractor);
-        doubleExtractors.add(null);
-        stringExtractors.add(null);
-        dateExtractors.add(null);
-        blobExtractors.add(null);
-        addFieldNameToIndexMap(name, Long.TYPE);
+        var index = addFieldNameToIndexMap(name, Long.TYPE);
+        longExtractors.put(index, extractor);
     }
 
     private void addDoubleExtractor(String name, Function<ByteBuffer, Double> extractor) {
-        boolExtractors.add(null);
-        byteExtractors.add(null);
-        longExtractors.add(null);
-        doubleExtractors.add(extractor);
-        stringExtractors.add(null);
-        dateExtractors.add(null);
-        blobExtractors.add(null);
-        addFieldNameToIndexMap(name, Double.TYPE);
+        var index = addFieldNameToIndexMap(name, Double.TYPE);
+        doubleExtractors.put(index, extractor);
     }
 
-    private void addFieldNameToIndexMap(String name, Type type) {
+    private int addFieldNameToIndexMap(String name, Type type) {
         var index = fields.size();
         fields.add(new YxdbField(name, type));
         nameToIndex.put(name, index);
+        return index;
     }
 }

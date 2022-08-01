@@ -43,6 +43,10 @@ public class YxdbRecord {
                     record.addLongExtractor(field.name(), Extractors.NewInt32Extractor(startAt));
                     startSize += 5;
                     break;
+                case "Int64":
+                    record.addLongExtractor(field.name(), Extractors.NewInt64Extractor(startAt));
+                    startSize += 9;
+                    break;
             }
         }
         if (varFields > 0) {

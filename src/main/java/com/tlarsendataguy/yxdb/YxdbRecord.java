@@ -67,6 +67,11 @@ public class YxdbRecord {
                     record.addStringExtractor(field.name(), Extractors.NewStringExtractor(startAt, size));
                     startAt += size + 1;
                     break;
+                case "WString":
+                    size = field.size();
+                    record.addStringExtractor(field.name(), Extractors.NewWStringExtractor(startAt, size));
+                    startAt += (size * 2) + 1;
+                    break;
             }
         }
         if (varFields > 0) {

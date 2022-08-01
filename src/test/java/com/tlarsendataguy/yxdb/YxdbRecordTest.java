@@ -11,7 +11,7 @@ public class YxdbRecordTest {
         var record = loadRecordWithValueColumn("Int16", 2, new byte[]{23,0,0});
 
         Assertions.assertEquals(1, record.fields.size());
-        Assertions.assertSame(Long.TYPE, record.fields.get(0).type());
+        Assertions.assertSame(YxdbField.DataType.LONG, record.fields.get(0).type());
         Assertions.assertEquals("value", record.fields.get(0).name());
         Assertions.assertEquals(23, record.extractLongFrom(0));
         Assertions.assertEquals(23, record.extractLongFrom("value"));
@@ -36,7 +36,7 @@ public class YxdbRecordTest {
         var record = loadRecordWithValueColumn("Float", 4, new byte[]{-51,-52,-116,63,0,0,0,0, 0});
 
         Assertions.assertEquals(1, record.fields.size());
-        Assertions.assertSame(Double.TYPE, record.fields.get(0).type());
+        Assertions.assertSame(YxdbField.DataType.DOUBLE, record.fields.get(0).type());
         Assertions.assertEquals("value", record.fields.get(0).name());
         Assertions.assertEquals(1.1f, record.extractDoubleFrom(0));
         Assertions.assertEquals(1.1f, record.extractDoubleFrom("value"));
@@ -54,6 +54,17 @@ public class YxdbRecordTest {
         var record = loadRecordWithValueColumn("FixedDecimal", 10, new byte[]{49, 50, 51, 46, 52, 53, 0, 43, 67, 110, 0});
 
         Assertions.assertEquals(123.45, record.extractDoubleFrom(0));
+    }
+
+    @Test
+    public void TestReadStringRecord() {
+        var record = loadRecordWithValueColumn("String", 15, new byte[]{104, 101, 108, 108, 111, 32, 119, 111, 114, 108, 100, 33, 0, 23, 77, 0});
+
+        Assertions.assertEquals(1, record.fields.size());
+        Assertions.assertSame(YxdbField.DataType.STRING, record.fields.get(0).type());
+        Assertions.assertEquals("value", record.fields.get(0).name());
+        Assertions.assertEquals("hello world!", record.extractStringFrom(0));
+        Assertions.assertEquals("hello world!", record.extractStringFrom("value"));
     }
 
     private static YxdbRecord loadRecordWithValueColumn(String type, int size, byte[] sourceData) {

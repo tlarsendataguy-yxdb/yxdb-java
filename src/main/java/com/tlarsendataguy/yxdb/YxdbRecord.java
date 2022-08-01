@@ -3,7 +3,6 @@ package com.tlarsendataguy.yxdb;
 import java.lang.reflect.Type;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.sql.Array;
 import java.util.*;
 import java.util.function.Function;
 
@@ -35,6 +34,7 @@ public class YxdbRecord {
         YxdbRecord record = new YxdbRecord(fields.size());
         int startAt = 0;
         int varFields = 0;
+        int size;
         for (MetaInfoField field: fields) {
             switch (field.type()) {
                 case "Int16":
@@ -58,8 +58,13 @@ public class YxdbRecord {
                     startAt += 9;
                     break;
                 case "FixedDecimal":
-                    var size = field.size();
+                    size = field.size();
                     record.addDoubleExtractor(field.name(), Extractors.NewFixedDecimalExtractor(startAt, size));
+                    startAt += size + 1;
+                    break;
+                case "String":
+                    size = field.size();
+                    record.addStringExtractor(field.name(), Extractors.NewStringExtractor(startAt, size));
                     startAt += size + 1;
                     break;
             }
@@ -99,17 +104,32 @@ public class YxdbRecord {
         return extractDoubleFrom(index);
     }
 
+    public String extractStringFrom(int index) {
+        return stringExtractors.get(index).apply(buffer);
+    }
+
+    public String extractStringFrom(String name) {
+        var index = nameToIndex.get(name);
+        return extractStringFrom(index);
+    }
+
     private void addLongExtractor(String name, Function<ByteBuffer, Long> extractor) {
-        var index = addFieldNameToIndexMap(name, Long.TYPE);
+        var index = addFieldNameToIndexMap(name, YxdbField.DataType.LONG);
         longExtractors.put(index, extractor);
     }
 
     private void addDoubleExtractor(String name, Function<ByteBuffer, Double> extractor) {
-        var index = addFieldNameToIndexMap(name, Double.TYPE);
+        var index = addFieldNameToIndexMap(name, YxdbField.DataType.DOUBLE);
         doubleExtractors.put(index, extractor);
     }
 
-    private int addFieldNameToIndexMap(String name, Type type) {
+    private void addStringExtractor(String name, Function<ByteBuffer, String> extractor) {
+        var index = addFieldNameToIndexMap(name, YxdbField.DataType.STRING);
+        stringExtractors.put(index, extractor);
+
+    }
+
+    private int addFieldNameToIndexMap(String name, YxdbField.DataType type) {
         var index = fields.size();
         fields.add(new YxdbField(name, type));
         nameToIndex.put(name, index);

@@ -1,5 +1,7 @@
 package com.tlarsendataguy.yxdb;
 
-import java.lang.reflect.Type;
-
-public record YxdbField(String name, Type type) { }
+public record YxdbField(String name, DataType type) {
+    public enum DataType {
+        BOOLEAN, BYTE, LONG, DOUBLE, STRING, DATE, BLOB
+    }
+}

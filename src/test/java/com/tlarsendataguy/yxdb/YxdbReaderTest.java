@@ -2,23 +2,13 @@ package com.tlarsendataguy.yxdb;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
-import java.io.StringReader;
-
-public class ReaderTest {
+public class YxdbReaderTest {
     @Test
     public void TestGetReader() {
         var path = "src/test/resources/AllNormalFields.yxdb";
         try{
-            var yxdb = Reader.loadYxdb(path);
+            var yxdb = YxdbReader.loadYxdb(path);
             Assertions.assertEquals(1, yxdb.numRecords);
             Assertions.assertEquals(1372, yxdb.metaInfoSize);
             Assertions.assertNotNull(yxdb.metaInfoStr);

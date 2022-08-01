@@ -16,8 +16,8 @@ import java.util.List;
 
 import static java.lang.Integer.parseInt;
 
-public class Reader {
-    private Reader(String path) throws FileNotFoundException {
+public class YxdbReader {
+    private YxdbReader(String path) throws FileNotFoundException {
         this.path = path;
         var file = new File(this.path);
         stream = new FileInputStream(file);
@@ -27,12 +27,12 @@ public class Reader {
     public long numRecords;
     public int metaInfoSize;
     public String metaInfoStr;
-    public List<Field> fields;
+    public List<MetaInfoField> fields;
     private final FileInputStream stream;
     private final String path;
 
-    public static Reader loadYxdb(String path) throws IllegalArgumentException, IOException {
-        var reader = new Reader(path);
+    public static YxdbReader loadYxdb(String path) throws IllegalArgumentException, IOException {
+        var reader = new YxdbReader(path);
         reader.loadHeaderAndMetaInfo();
         return reader;
     }
@@ -107,37 +107,37 @@ public class Reader {
 
         var nameStr = name.getNodeValue();
         switch (type.getNodeValue()) {
-            case "Byte" -> fields.add(new Field(nameStr, "Byte", 1, 0));
-            case "Bool" -> fields.add(new Field(nameStr, "Bool", 1, 0));
-            case "Int16" -> fields.add(new Field(nameStr, "Int16", 2, 0));
-            case "Int32" -> fields.add(new Field(nameStr, "Int32", 4, 0));
-            case "Int64" -> fields.add(new Field(nameStr, "Int64", 8, 0));
+            case "Byte" -> fields.add(new MetaInfoField(nameStr, "Byte", 1, 0));
+            case "Bool" -> fields.add(new MetaInfoField(nameStr, "Bool", 1, 0));
+            case "Int16" -> fields.add(new MetaInfoField(nameStr, "Int16", 2, 0));
+            case "Int32" -> fields.add(new MetaInfoField(nameStr, "Int32", 4, 0));
+            case "Int64" -> fields.add(new MetaInfoField(nameStr, "Int64", 8, 0));
             case "FixedDecimal" -> {
                 if (scale == null || size == null) {
                     closeStreamAndThrow();
                     return;
                 }
-                fields.add(new Field(nameStr, "FixedDecimal", parseInt(size.getNodeValue()), parseInt(scale.getNodeValue())));
+                fields.add(new MetaInfoField(nameStr, "FixedDecimal", parseInt(size.getNodeValue()), parseInt(scale.getNodeValue())));
             }
-            case "Float" -> fields.add(new Field(nameStr, "Float", 4, 0));
-            case "Double" -> fields.add(new Field(nameStr, "Double", 8, 0));
+            case "Float" -> fields.add(new MetaInfoField(nameStr, "Float", 4, 0));
+            case "Double" -> fields.add(new MetaInfoField(nameStr, "Double", 8, 0));
             case "String" -> {
                 if (size == null) {
                     closeStreamAndThrow();
                     return;
                 }
-                fields.add(new Field(nameStr, "String", parseInt(size.getNodeValue()), 0));
+                fields.add(new MetaInfoField(nameStr, "String", parseInt(size.getNodeValue()), 0));
             }
             case "WString" -> {
                 if (size == null) {
                     closeStreamAndThrow();
                     return;
                 }
-                fields.add(new Field(nameStr, "WString", parseInt(size.getNodeValue()) * 2, 0));
+                fields.add(new MetaInfoField(nameStr, "WString", parseInt(size.getNodeValue()) * 2, 0));
             }
-            case "V_String", "V_WString", "Blob", "SpatialObj" -> fields.add(new Field(nameStr, type.getNodeValue(), 4, 0));
-            case "Date" -> fields.add(new Field(nameStr, "Date", 10, 0));
-            case "DateTime" -> fields.add(new Field(nameStr, "DateTime", 19, 0));
+            case "V_String", "V_WString", "Blob", "SpatialObj" -> fields.add(new MetaInfoField(nameStr, type.getNodeValue(), 4, 0));
+            case "Date" -> fields.add(new MetaInfoField(nameStr, "Date", 10, 0));
+            case "DateTime" -> fields.add(new MetaInfoField(nameStr, "DateTime", 19, 0));
             default -> closeStreamAndThrow();
         }
     }

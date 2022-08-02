@@ -26,6 +26,24 @@ public class YxdbReaderTest {
         Assertions.assertEquals(1, read);
     }
 
+    @Test
+    public void TestLotsOfRecords() throws IOException {
+        var path = "src/test/resources/LotsOfRecords.yxdb";
+        var yxdb = YxdbReader.loadYxdb(path);
+
+        long sum = 0;
+        int index = 0;
+        while (yxdb.next()) {
+            var value = yxdb.readInt(0);
+            if (index % 10000 == 0) {
+                System.out.println("index " + index + ", value " + value);
+            }
+            sum += value;
+            index++;
+        }
+        //Assertions.assertEquals(5000050000L, sum);
+    }
+
     String AllNormalFieldsMetaXml = """
 <RecordInfo>
 	<Field name="ByteField" source="TextInput:" type="Byte"/>

@@ -32,8 +32,8 @@ public class YxdbReader {
     private final String path;
     private int currentRecord = 0;
     private YxdbRecord record;
-    private ByteBuffer compressedBuffer = ByteBuffer.allocate(0);
-    private ByteBuffer uncompressedBuffer = ByteBuffer.allocate(0);
+    private ByteBuffer compressedBuffer = ByteBuffer.allocate(262144);
+    private ByteBuffer uncompressedBuffer = ByteBuffer.allocate(262144);
     private int uncompressedSize;
     private int uncompressedIndex;
     private final ByteBuffer blockSizeBuffer = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN);
@@ -57,6 +57,13 @@ public class YxdbReader {
     }
     public Byte readByte(String name) {
         return record.extractByteFrom(name);
+    }
+
+    public Long readInt(int index) {
+        return record.extractLongFrom(index);
+    }
+    public Long readInt(String name) {
+        return record.extractLongFrom(name);
     }
 
     private void loadHeaderAndMetaInfo() throws IOException, IllegalArgumentException {
@@ -174,15 +181,24 @@ public class YxdbReader {
             }
         }
 
-        var totalLength = record.fixedSize + 4 + uncompressedBuffer.getInt(uncompressedIndex+record.fixedSize);
+        var totalLength = calcTotalLength();
         record.loadRecordBlobFrom(uncompressedBuffer.array(), uncompressedIndex, uncompressedIndex+totalLength);
         uncompressedIndex += totalLength;
         currentRecord++;
         return currentRecord <= numRecords;
     }
 
+    private int calcTotalLength() {
+        if (record.hasVar) {
+            return record.fixedSize + 4 + uncompressedBuffer.getInt(uncompressedIndex+record.fixedSize);
+        } else {
+            return record.fixedSize;
+        }
+    }
+
     private boolean loadNewBlock() throws IOException {
         uncompressedIndex = 0;
+        blockSizeBuffer.position(0);
         var read = stream.readNBytes(blockSizeBuffer.array(), 0, 4);
         if (read < 4) {
             stream.close();
@@ -192,17 +208,23 @@ public class YxdbReader {
 
         var checkBit = ((long)length&0xffffffffL) & 0x80000000;
         if (checkBit > 0) {
+            System.out.println("loading uncompressed block after record " + currentRecord);
             var uncompressedLength = length & 0x7fffff;
             return loadUncompressedBlock(uncompressedLength);
         } else {
+            System.out.println("loading compressed block after record " + currentRecord);
             return loadCompressedBlock(length);
         }
     }
 
     private boolean loadUncompressedBlock(int length) throws IOException {
+        if (length < 0) {
+            throw new IOException("cannot load an uncompressed block with length less than 0");
+        }
+
         var uncompressedLength = length & 0x7fffff;
         if (uncompressedLength > compressedBuffer.capacity()) {
-            allocateNewBuffers(uncompressedLength+100, 64000);
+            allocateNewBuffers(uncompressedLength+100);
         }
         var read = stream.readNBytes(uncompressedBuffer.array(), 0, uncompressedLength);
         if (read < uncompressedLength) {
@@ -213,8 +235,12 @@ public class YxdbReader {
     }
 
     private boolean loadCompressedBlock(int length) throws IOException {
+        if (length < 0) {
+            throw new IOException("cannot load a compressed block with length less than 0");
+        }
+
         if (length > compressedBuffer.capacity()) {
-            allocateNewBuffers(length+100, 64000);
+            allocateNewBuffers(length+100);
         }
         var read = stream.readNBytes(compressedBuffer.array(), 0, length);
         if (read != length) {
@@ -226,7 +252,12 @@ public class YxdbReader {
         return true;
     }
 
-    private void allocateNewBuffers(int compressedBufferSize, int uncompressedBufferSize) {
+    private void allocateNewBuffers(int compressedBufferSize) {
+        int uncompressedBufferSize = 64000;
+        if (compressedBufferSize > 22000) {
+            uncompressedBufferSize = compressedBufferSize*3;
+        }
+
         compressedBuffer = ByteBuffer.allocate(compressedBufferSize).order(ByteOrder.LITTLE_ENDIAN);
         uncompressedBuffer = ByteBuffer.allocate(uncompressedBufferSize).order(ByteOrder.LITTLE_ENDIAN);
         lzf = new Lzf(compressedBuffer.array(), uncompressedBuffer.array());

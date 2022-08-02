@@ -18,6 +18,8 @@ public class YxdbRecord {
         blobExtractors = new HashMap<>(fieldCount);
     }
     public final List<YxdbField> fields;
+    public int fixedSize;
+    public boolean hasVar;
     private ByteBuffer buffer;
     private final Map<String, Integer> nameToIndex;
     private final Map<Integer, Function<ByteBuffer,Boolean>> boolExtractors;
@@ -73,10 +75,12 @@ public class YxdbRecord {
                 case "V_String" -> {
                     record.addStringExtractor(field.name(), Extractors.NewV_StringExtractor(startAt));
                     startAt += 4;
+                    record.hasVar = true;
                 }
                 case "V_WString" -> {
                     record.addStringExtractor(field.name(), Extractors.NewV_WStringExtractor(startAt));
                     startAt += 4;
+                    record.hasVar = true;
                 }
                 case "Date" -> {
                     record.addDateExtractor(field.name(), Extractors.NewDateExtractor(startAt));
@@ -97,10 +101,12 @@ public class YxdbRecord {
                 case "Blob", "SpatialObj" -> {
                     record.addBlobExtractor(field.name(), Extractors.NewBlobExtractor(startAt));
                     startAt += 4;
+                    record.hasVar = true;
                 }
                 default -> throw new IllegalArgumentException("field type is invalid");
             }
         }
+        record.fixedSize = startAt;
         return record;
     }
 

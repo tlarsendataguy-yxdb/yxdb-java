@@ -30,6 +30,11 @@ public class YxdbReader {
     public List<MetaInfoField> fields;
     private final FileInputStream stream;
     private final String path;
+    private int currentRecord = 0;
+    private YxdbRecord record;
+    private byte[] compressedBuffer;
+    private byte[] uncompressedBuffer;
+    private byte[] blockSizeBuffer = new byte[4];
 
     public static YxdbReader loadYxdb(String path) throws IllegalArgumentException, IOException {
         var reader = new YxdbReader(path);
@@ -37,11 +42,22 @@ public class YxdbReader {
         return reader;
     }
 
+    public boolean next() {
+        currentRecord++;
+        return currentRecord <= numRecords;
+    }
+
+    public Byte readByte(int index) {
+        return record.extractByteFrom(index);
+    }
+
     private void loadHeaderAndMetaInfo() throws IOException, IllegalArgumentException {
         var header = getHeader();
         numRecords = header.getLong(104);
         metaInfoSize = header.getInt(80);
         loadMetaInfo();
+        record = YxdbRecord.newFromFieldList(fields);
+
     }
 
     private void loadMetaInfo() throws IOException, IllegalArgumentException {

@@ -17,6 +17,8 @@ public class YxdbRecordTest {
         Assertions.assertEquals("value", record.fields.get(0).name());
         Assertions.assertEquals(23, record.extractLongFrom(0));
         Assertions.assertEquals(23, record.extractLongFrom("value"));
+        Assertions.assertEquals(3, record.fixedSize);
+        Assertions.assertFalse(record.hasVar);
     }
 
     @Test
@@ -24,6 +26,8 @@ public class YxdbRecordTest {
         var record = loadRecordWithValueColumn("Int32",4, new byte[]{23,0,0,0,0});
 
         Assertions.assertEquals(23, record.extractLongFrom(0));
+        Assertions.assertEquals(5, record.fixedSize);
+        Assertions.assertFalse(record.hasVar);
     }
 
     @Test
@@ -31,6 +35,8 @@ public class YxdbRecordTest {
         var record = loadRecordWithValueColumn("Int64", 8, new byte[]{23,0,0,0,0,0,0,0,0});
 
         Assertions.assertEquals(23, record.extractLongFrom(0));
+        Assertions.assertEquals(9, record.fixedSize);
+        Assertions.assertFalse(record.hasVar);
     }
 
     @Test
@@ -42,6 +48,8 @@ public class YxdbRecordTest {
         Assertions.assertEquals("value", record.fields.get(0).name());
         Assertions.assertEquals(1.1f, record.extractDoubleFrom(0));
         Assertions.assertEquals(1.1f, record.extractDoubleFrom("value"));
+        Assertions.assertEquals(5, record.fixedSize);
+        Assertions.assertFalse(record.hasVar);
     }
 
     @Test
@@ -49,6 +57,8 @@ public class YxdbRecordTest {
         var record = loadRecordWithValueColumn("Double", 8, new byte[]{-102,-103,-103,-103,-103,-103,-15,63,0});
 
         Assertions.assertEquals(1.1, record.extractDoubleFrom(0));
+        Assertions.assertEquals(9, record.fixedSize);
+        Assertions.assertFalse(record.hasVar);
     }
 
     @Test
@@ -56,6 +66,8 @@ public class YxdbRecordTest {
         var record = loadRecordWithValueColumn("FixedDecimal", 10, new byte[]{49, 50, 51, 46, 52, 53, 0, 43, 67, 110, 0});
 
         Assertions.assertEquals(123.45, record.extractDoubleFrom(0));
+        Assertions.assertEquals(11, record.fixedSize);
+        Assertions.assertFalse(record.hasVar);
     }
 
     @Test
@@ -67,6 +79,8 @@ public class YxdbRecordTest {
         Assertions.assertEquals("value", record.fields.get(0).name());
         Assertions.assertEquals("hello world!", record.extractStringFrom(0));
         Assertions.assertEquals("hello world!", record.extractStringFrom("value"));
+        Assertions.assertEquals(16, record.fixedSize);
+        Assertions.assertFalse(record.hasVar);
     }
 
     @Test
@@ -74,6 +88,8 @@ public class YxdbRecordTest {
         var record = loadRecordWithValueColumn("WString", 15, new byte[]{104, 0, 101, 0, 108, 0, 108, 0, 111, 0, 32, 0, 119, 0, 111, 0, 114, 0, 108, 0, 100, 0, 33, 0, 0, 0, 23, 0, 77, 0, 0});
 
         Assertions.assertEquals("hello world!", record.extractStringFrom(0));
+        Assertions.assertEquals(31, record.fixedSize);
+        Assertions.assertFalse(record.hasVar);
     }
 
     @Test
@@ -81,6 +97,8 @@ public class YxdbRecordTest {
         var record = loadRecordWithValueColumn("V_String", 15, new byte[]{0, 0, 0, 0, 4, 0, 0, 0, 1,2,3,4,5,6,7,8});
 
         Assertions.assertEquals("", record.extractStringFrom(0));
+        Assertions.assertEquals(4, record.fixedSize);
+        Assertions.assertTrue(record.hasVar);
     }
 
     @Test
@@ -88,6 +106,8 @@ public class YxdbRecordTest {
         var record = loadRecordWithValueColumn("V_WString", 1, 15, new byte[]{0, 0, 0, 0, 0, 4, 0, 0, 0, 1,2,3,4,5,6,7,8});
 
         Assertions.assertEquals("", record.extractStringFrom(0));
+        Assertions.assertEquals(4, record.fixedSize);
+        Assertions.assertTrue(record.hasVar);
     }
 
     @Test
@@ -99,13 +119,17 @@ public class YxdbRecordTest {
         Assertions.assertEquals("value", record.fields.get(0).name());
         Assertions.assertEquals(new SimpleDateFormat("yyyy-MM-dd").parse("2021-01-01"), record.extractDateFrom(0));
         Assertions.assertEquals(new SimpleDateFormat("yyyy-MM-dd").parse("2021-01-01"), record.extractDateFrom("value"));
+        Assertions.assertEquals(11, record.fixedSize);
+        Assertions.assertFalse(record.hasVar);
     }
 
     @Test
     public void TestReadDateTime() throws ParseException {
-        var record = loadRecordWithValueColumn("DateTime", 4, 10, new byte[]{0,0,0,0,50,48,50,49,45,48,49,45,48,50,32,48,51,58,48,52,58,48,53,0});
+        var record = loadRecordWithValueColumn("DateTime", 4, 19, new byte[]{0,0,0,0,50,48,50,49,45,48,49,45,48,50,32,48,51,58,48,52,58,48,53,0});
 
         Assertions.assertEquals(new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse("2021-01-02 03:04:05"), record.extractDateFrom(0));
+        Assertions.assertEquals(20, record.fixedSize);
+        Assertions.assertFalse(record.hasVar);
     }
 
     @Test
@@ -117,6 +141,8 @@ public class YxdbRecordTest {
         Assertions.assertEquals("value", record.fields.get(0).name());
         Assertions.assertTrue(record.extractBooleanFrom(0));
         Assertions.assertTrue(record.extractBooleanFrom("value"));
+        Assertions.assertEquals(1, record.fixedSize);
+        Assertions.assertFalse(record.hasVar);
     }
 
     @Test
@@ -128,6 +154,8 @@ public class YxdbRecordTest {
         Assertions.assertEquals("value", record.fields.get(0).name());
         Assertions.assertEquals((byte)23, record.extractByteFrom(0));
         Assertions.assertEquals((byte)23, record.extractByteFrom("value"));
+        Assertions.assertEquals(2, record.fixedSize);
+        Assertions.assertFalse(record.hasVar);
     }
 
     @Test
@@ -139,6 +167,8 @@ public class YxdbRecordTest {
         Assertions.assertEquals("value", record.fields.get(0).name());
         Assertions.assertArrayEquals(new byte[]{}, record.extractBlobFrom(0));
         Assertions.assertArrayEquals(new byte[]{}, record.extractBlobFrom("value"));
+        Assertions.assertEquals(4, record.fixedSize);
+        Assertions.assertTrue(record.hasVar);
     }
 
     @Test

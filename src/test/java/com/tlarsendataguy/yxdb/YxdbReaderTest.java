@@ -14,6 +14,14 @@ public class YxdbReaderTest {
             Assertions.assertNotNull(yxdb.metaInfoStr);
             Assertions.assertEquals(AllNormalFieldsMetaXml, yxdb.metaInfoStr);
             Assertions.assertEquals(16, yxdb.fields.size());
+
+            int read = 0;
+            while (yxdb.next()) {
+                //Assertions.assertEquals((byte)1, yxdb.readByte(0));
+                read++;
+            }
+
+            Assertions.assertEquals(1, read);
         } catch (Exception ex){
             Assertions.fail(ex.toString());
         }

@@ -55,7 +55,6 @@ class BufferedRecordReader {
 
         while (size > 0) {
             if (lzfOutSize == 0) {
-                System.out.println("load first lzf block");
                 var read = stream.readNBytes(lzfLengthBuffer.array(), 0, 4);
                 if (read < 4) {
                     return false;
@@ -65,7 +64,6 @@ class BufferedRecordReader {
             }
 
             while (size + lzfOutIndex > lzfOutSize) {
-                System.out.println("load next lzf block");
                 var remainingLzf = lzfOutSize - lzfOutIndex;
                 System.arraycopy(lzfOut.array(), lzfOutIndex, recordBuffer.array(), recordBufferIndex, remainingLzf);
                 recordBufferIndex += remainingLzf;

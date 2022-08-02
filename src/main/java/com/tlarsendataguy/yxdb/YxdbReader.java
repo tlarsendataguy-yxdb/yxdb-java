@@ -92,6 +92,14 @@ public class YxdbReader {
         return record.extractDateFrom(name, recordReader.recordBuffer);
     }
 
+    public byte[] readBlob(int index) {
+        return record.extractBlobFrom(index, recordReader.recordBuffer);
+    }
+
+    public byte[] readBlob(String name) {
+        return record.extractBlobFrom(name, recordReader.recordBuffer);
+    }
+
     private void loadHeaderAndMetaInfo() throws IOException, IllegalArgumentException {
         var header = getHeader();
         numRecords = header.getLong(104);

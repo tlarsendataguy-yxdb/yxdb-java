@@ -32,9 +32,12 @@ public class YxdbReader {
     private final String path;
     private int currentRecord = 0;
     private YxdbRecord record;
-    private byte[] compressedBuffer;
-    private byte[] uncompressedBuffer;
-    private byte[] blockSizeBuffer = new byte[4];
+    private ByteBuffer compressedBuffer = ByteBuffer.allocate(0);
+    private ByteBuffer uncompressedBuffer = ByteBuffer.allocate(0);
+    private int uncompressedSize;
+    private int uncompressedIndex;
+    private final ByteBuffer blockSizeBuffer = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN);
+    Lzf lzf;
 
     public static YxdbReader loadYxdb(String path) throws IllegalArgumentException, IOException {
         var reader = new YxdbReader(path);
@@ -42,7 +45,47 @@ public class YxdbReader {
         return reader;
     }
 
-    public boolean next() {
+    public boolean next() throws IOException {
+        if (currentRecord >= numRecords) {
+            return false;
+        }
+        if (uncompressedIndex >= uncompressedSize) {
+            uncompressedIndex = 0;
+            var read = stream.readNBytes(blockSizeBuffer.array(), 0, 4);
+            if (read < 4) {
+                stream.close();
+                return false;
+            }
+            var length = blockSizeBuffer.getInt();
+
+            var checkBit = ((long)length&0xffffffffL) & 0x80000000;
+            if (checkBit > 0) {
+                var uncompressedLength = length & 0x7fffff;
+                if (uncompressedLength > compressedBuffer.capacity()) {
+                    compressedBuffer = ByteBuffer.allocate(uncompressedLength+100).order(ByteOrder.LITTLE_ENDIAN);
+                    uncompressedBuffer = ByteBuffer.allocate((uncompressedLength+100)*2).order(ByteOrder.LITTLE_ENDIAN);
+                    lzf = new Lzf(compressedBuffer.array(), uncompressedBuffer.array());
+                }
+                stream.readNBytes(uncompressedBuffer.array(), 0, uncompressedLength);
+            } else {
+                if (length > compressedBuffer.capacity()) {
+                    compressedBuffer = ByteBuffer.allocate(length+100).order(ByteOrder.LITTLE_ENDIAN);
+                    uncompressedBuffer = ByteBuffer.allocate(64000).order(ByteOrder.LITTLE_ENDIAN);
+                    lzf = new Lzf(compressedBuffer.array(), uncompressedBuffer.array());
+                }
+                read = stream.readNBytes(compressedBuffer.array(), 0, length);
+                if (read != length) {
+                    stream.close();
+                    return false;
+                }
+
+                uncompressedSize = lzf.decompress(length);
+
+                var totalLength = record.fixedSize + 4 + uncompressedBuffer.getInt(uncompressedIndex+record.fixedSize);
+                record.loadRecordBlobFrom(uncompressedBuffer.array(), uncompressedIndex, uncompressedIndex+totalLength);
+                uncompressedIndex += totalLength;
+            }
+        }
         currentRecord++;
         return currentRecord <= numRecords;
     }
@@ -149,7 +192,7 @@ public class YxdbReader {
                     closeStreamAndThrow();
                     return;
                 }
-                fields.add(new MetaInfoField(nameStr, "WString", parseInt(size.getNodeValue()) * 2, 0));
+                fields.add(new MetaInfoField(nameStr, "WString", parseInt(size.getNodeValue()), 0));
             }
             case "V_String", "V_WString", "Blob", "SpatialObj" -> fields.add(new MetaInfoField(nameStr, type.getNodeValue(), 4, 0));
             case "Date" -> fields.add(new MetaInfoField(nameStr, "Date", 10, 0));

@@ -3,28 +3,26 @@ package com.tlarsendataguy.yxdb;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
 
+import java.io.IOException;
+
 public class YxdbReaderTest {
     @Test
-    public void TestGetReader() {
+    public void TestGetReader() throws IOException {
         var path = "src/test/resources/AllNormalFields.yxdb";
-        try{
-            var yxdb = YxdbReader.loadYxdb(path);
-            Assertions.assertEquals(1, yxdb.numRecords);
-            Assertions.assertEquals(1372, yxdb.metaInfoSize);
-            Assertions.assertNotNull(yxdb.metaInfoStr);
-            Assertions.assertEquals(AllNormalFieldsMetaXml, yxdb.metaInfoStr);
-            Assertions.assertEquals(16, yxdb.fields.size());
+        var yxdb = YxdbReader.loadYxdb(path);
+        Assertions.assertEquals(1, yxdb.numRecords);
+        Assertions.assertEquals(1372, yxdb.metaInfoSize);
+        Assertions.assertNotNull(yxdb.metaInfoStr);
+        Assertions.assertEquals(AllNormalFieldsMetaXml, yxdb.metaInfoStr);
+        Assertions.assertEquals(16, yxdb.fields.size());
 
-            int read = 0;
-            while (yxdb.next()) {
-                //Assertions.assertEquals((byte)1, yxdb.readByte(0));
-                read++;
-            }
-
-            Assertions.assertEquals(1, read);
-        } catch (Exception ex){
-            Assertions.fail(ex.toString());
+        int read = 0;
+        while (yxdb.next()) {
+            Assertions.assertEquals((byte)1, yxdb.readByte(0));
+            read++;
         }
+
+        Assertions.assertEquals(1, read);
     }
 
     String AllNormalFieldsMetaXml = """

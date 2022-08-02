@@ -193,31 +193,43 @@ public class YxdbReader {
         var checkBit = ((long)length&0xffffffffL) & 0x80000000;
         if (checkBit > 0) {
             var uncompressedLength = length & 0x7fffff;
-            if (uncompressedLength > compressedBuffer.capacity()) {
-                compressedBuffer = ByteBuffer.allocate(uncompressedLength+100).order(ByteOrder.LITTLE_ENDIAN);
-                uncompressedBuffer = ByteBuffer.allocate((uncompressedLength+100)*2).order(ByteOrder.LITTLE_ENDIAN);
-                lzf = new Lzf(compressedBuffer.array(), uncompressedBuffer.array());
-            }
-            read = stream.readNBytes(uncompressedBuffer.array(), 0, uncompressedLength);
-            if (read < uncompressedLength) {
-                stream.close();
-                return false;
-            }
+            return loadUncompressedBlock(uncompressedLength);
         } else {
-            if (length > compressedBuffer.capacity()) {
-                compressedBuffer = ByteBuffer.allocate(length + 100).order(ByteOrder.LITTLE_ENDIAN);
-                uncompressedBuffer = ByteBuffer.allocate(64000).order(ByteOrder.LITTLE_ENDIAN);
-                lzf = new Lzf(compressedBuffer.array(), uncompressedBuffer.array());
-            }
-            read = stream.readNBytes(compressedBuffer.array(), 0, length);
-            if (read != length) {
-                stream.close();
-                return false;
-            }
+            return loadCompressedBlock(length);
+        }
+    }
 
-            uncompressedSize = lzf.decompress(length);
+    private boolean loadUncompressedBlock(int length) throws IOException {
+        var uncompressedLength = length & 0x7fffff;
+        if (uncompressedLength > compressedBuffer.capacity()) {
+            allocateNewBuffers(uncompressedLength+100, 64000);
+        }
+        var read = stream.readNBytes(uncompressedBuffer.array(), 0, uncompressedLength);
+        if (read < uncompressedLength) {
+            stream.close();
+            return false;
         }
         return true;
+    }
+
+    private boolean loadCompressedBlock(int length) throws IOException {
+        if (length > compressedBuffer.capacity()) {
+            allocateNewBuffers(length+100, 64000);
+        }
+        var read = stream.readNBytes(compressedBuffer.array(), 0, length);
+        if (read != length) {
+            stream.close();
+            return false;
+        }
+
+        uncompressedSize = lzf.decompress(length);
+        return true;
+    }
+
+    private void allocateNewBuffers(int compressedBufferSize, int uncompressedBufferSize) {
+        compressedBuffer = ByteBuffer.allocate(compressedBufferSize).order(ByteOrder.LITTLE_ENDIAN);
+        uncompressedBuffer = ByteBuffer.allocate(uncompressedBufferSize).order(ByteOrder.LITTLE_ENDIAN);
+        lzf = new Lzf(compressedBuffer.array(), uncompressedBuffer.array());
     }
 
     private void closeStreamAndThrow() throws IllegalArgumentException {

@@ -40,6 +40,7 @@ class BufferedRecordReader {
     public boolean nextRecord() throws IOException {
         currentRecord++;
         if (currentRecord > totalRecords) {
+            stream.close();
             return false;
         }
         recordBufferIndex = 0;

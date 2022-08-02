@@ -41,7 +41,7 @@ public class YxdbReaderTest {
             sum += value;
             index++;
         }
-        //Assertions.assertEquals(5000050000L, sum);
+        Assertions.assertEquals(5000050000L, sum);
     }
 
     String AllNormalFieldsMetaXml = """

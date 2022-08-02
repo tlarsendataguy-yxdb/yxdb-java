@@ -1,7 +1,6 @@
 package com.tlarsendataguy.yxdb;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.util.*;
 import java.util.function.Function;
 
@@ -20,7 +19,6 @@ class YxdbRecord {
     public final List<YxdbField> fields;
     public int fixedSize;
     public boolean hasVar;
-    private ByteBuffer buffer;
     private final Map<String, Integer> nameToIndex;
     private final Map<Integer, Function<ByteBuffer,Boolean>> boolExtractors;
     private final Map<Integer, Function<ByteBuffer,Byte>> byteExtractors;
@@ -110,78 +108,67 @@ class YxdbRecord {
         return record;
     }
 
-    void loadRecordBlobFrom(byte[] sourceData, int start, int to) {
-        if (to <= start) {
-            throw new IllegalArgumentException("to must be greater than start");
-        }
-        var length = to - start;
-        if (buffer == null || buffer.capacity() < length) {
-            buffer = ByteBuffer.allocate(length+100).order(ByteOrder.LITTLE_ENDIAN);
-        }
-        System.arraycopy(sourceData, start, buffer.array(), 0, length);
-    }
-
-    public Long extractLongFrom(int index) {
+    public Long extractLongFrom(int index, ByteBuffer buffer) {
         return longExtractors.get(index).apply(buffer);
     }
 
-    public Long extractLongFrom(String name) {
+    public Long extractLongFrom(String name, ByteBuffer buffer) {
         var index = nameToIndex.get(name);
-        return extractLongFrom(index);
+        return extractLongFrom(index, buffer);
     }
 
-    public Double extractDoubleFrom(int index) {
+    public Double extractDoubleFrom(int index, ByteBuffer buffer) {
         return doubleExtractors.get(index).apply(buffer);
     }
 
-    public Double extractDoubleFrom(String name) {
+    public Double extractDoubleFrom(String name, ByteBuffer buffer) {
         var index = nameToIndex.get(name);
-        return extractDoubleFrom(index);
+        return extractDoubleFrom(index, buffer);
     }
 
-    public String extractStringFrom(int index) {
+    public String extractStringFrom(int index, ByteBuffer buffer) {
         return stringExtractors.get(index).apply(buffer);
     }
 
-    public String extractStringFrom(String name) {
+    public String extractStringFrom(String name, ByteBuffer buffer) {
         var index = nameToIndex.get(name);
-        return extractStringFrom(index);
+        return extractStringFrom(index, buffer);
     }
 
-    public Date extractDateFrom(int index) {
+    public Date extractDateFrom(int index, ByteBuffer buffer) {
         return dateExtractors.get(index).apply(buffer);
     }
 
-    public Date extractDateFrom(String name) {
+    public Date extractDateFrom(String name, ByteBuffer buffer) {
         var index = nameToIndex.get(name);
-        return extractDateFrom(index);
+        return extractDateFrom(index, buffer);
     }
 
-    public Boolean extractBooleanFrom(int index) {
+    public Boolean extractBooleanFrom(int index, ByteBuffer buffer) {
         return boolExtractors.get(index).apply(buffer);
     }
 
-    public Boolean extractBooleanFrom(String name) {
+    public Boolean extractBooleanFrom(String name, ByteBuffer buffer) {
         var index = nameToIndex.get(name);
-        return extractBooleanFrom(index);
+        return extractBooleanFrom(index, buffer);
     }
 
-    public Byte extractByteFrom(int index) {
+    public Byte extractByteFrom(int index, ByteBuffer buffer) {
         return byteExtractors.get(index).apply(buffer);
     }
 
-    public Byte extractByteFrom(String name) {
+    public Byte extractByteFrom(String name, ByteBuffer buffer) {
         var index = nameToIndex.get(name);
-        return extractByteFrom(index);
+        return extractByteFrom(index, buffer);
     }
 
-    public byte[] extractBlobFrom(int index) {
+    public byte[] extractBlobFrom(int index, ByteBuffer buffer) {
         return blobExtractors.get(index).apply(buffer);
     }
 
-    public byte[] extractBlobFrom(String name) {
+    public byte[] extractBlobFrom(String name, ByteBuffer buffer) {
         var index = nameToIndex.get(name);
-        return extractBlobFrom(index);
+        return extractBlobFrom(index, buffer);
     }
 
     private void addLongExtractor(String name, Function<ByteBuffer, Long> extractor) {

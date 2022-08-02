@@ -5,7 +5,7 @@ import java.nio.ByteOrder;
 import java.util.*;
 import java.util.function.Function;
 
-public class YxdbRecord {
+class YxdbRecord {
     private YxdbRecord(int fieldCount){
         nameToIndex = new HashMap<>(fieldCount);
         fields = new ArrayList<>(fieldCount);

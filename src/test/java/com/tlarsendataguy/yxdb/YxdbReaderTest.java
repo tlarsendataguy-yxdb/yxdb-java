@@ -19,6 +19,7 @@ public class YxdbReaderTest {
         int read = 0;
         while (yxdb.next()) {
             Assertions.assertEquals((byte)1, yxdb.readByte(0));
+            Assertions.assertEquals((byte)1, yxdb.readByte("ByteField"));
             read++;
         }
 

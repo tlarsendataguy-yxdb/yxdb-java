@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.function.Function;
 
-public class Extractors {
+class Extractors {
     private static final DateFormat date = new SimpleDateFormat("yyyy-MM-dd");
     private static final DateFormat dateTime = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 

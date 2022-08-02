@@ -93,6 +93,9 @@ public class YxdbReader {
     public Byte readByte(int index) {
         return record.extractByteFrom(index);
     }
+    public Byte readByte(String name) {
+        return record.extractByteFrom(name);
+    }
 
     private void loadHeaderAndMetaInfo() throws IOException, IllegalArgumentException {
         var header = getHeader();

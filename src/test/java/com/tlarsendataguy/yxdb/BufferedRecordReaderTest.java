@@ -15,7 +15,7 @@ public class BufferedRecordReaderTest {
 
         var hasNext = reader.nextRecord();
         Assertions.assertTrue(hasNext);
-        //Assertions.assertEquals(1, reader.recordBuffer.getInt(0));
+        Assertions.assertEquals(1, reader.recordBuffer.getInt(0));
     }
 
     private BufferedRecordReader generateReader(String path) throws IOException {

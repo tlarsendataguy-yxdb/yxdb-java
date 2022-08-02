@@ -13,13 +13,12 @@ public class BufferedRecordReaderTest {
     public void TestAllNormalFieldsFile() throws IOException {
         var reader = generateReader("src/test/resources/LotsOfRecords.yxdb");
 
-        var hasNext = reader.nextRecord();
-        Assertions.assertTrue(hasNext);
-        Assertions.assertEquals(1, reader.recordBuffer.getInt(0));
-
-        hasNext = reader.nextRecord();
-        Assertions.assertTrue(hasNext);
-        Assertions.assertEquals(2, reader.recordBuffer.getInt(0));
+        int recordsRead = 0;
+        while (reader.nextRecord()) {
+            recordsRead++;
+            Assertions.assertEquals(recordsRead, reader.recordBuffer.getInt(0));
+        }
+        Assertions.assertEquals(100000, recordsRead);
     }
 
     private BufferedRecordReader generateReader(String path) throws IOException {
@@ -28,6 +27,6 @@ public class BufferedRecordReaderTest {
         stream.readNBytes(header.array(), 0, 512);
         var metaInfoSize = header.getInt(80) * 2;
         stream.skip(metaInfoSize);
-        return new BufferedRecordReader(stream,5, false);
+        return new BufferedRecordReader(stream,5, false, 100000);
     }
 }

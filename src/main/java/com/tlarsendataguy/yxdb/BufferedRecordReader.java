@@ -7,7 +7,8 @@ import java.nio.ByteOrder;
 
 class BufferedRecordReader {
     static int lzfBufferSize = 262144;
-    public BufferedRecordReader(FileInputStream stream, int fixedLen, boolean hasVarFields) {
+    public BufferedRecordReader(FileInputStream stream, int fixedLen, boolean hasVarFields, long totalRecords) {
+        this.totalRecords = totalRecords;
         this.stream = stream;
         this.fixedLen = fixedLen;
         this.hasVarFields = hasVarFields;
@@ -24,6 +25,7 @@ class BufferedRecordReader {
     final FileInputStream stream;
     final int fixedLen;
     final boolean hasVarFields;
+    final long totalRecords;
 
     final ByteBuffer lzfIn;
     final ByteBuffer lzfOut;
@@ -32,9 +34,14 @@ class BufferedRecordReader {
     final Lzf lzf;
     final ByteBuffer lzfLengthBuffer;
     ByteBuffer recordBuffer;
-    int recordIndex;
+    int recordBufferIndex;
+    long currentRecord;
 
     public boolean nextRecord() throws IOException {
+        currentRecord++;
+        if (currentRecord > totalRecords) {
+            return false;
+        }
         if (hasVarFields) {
             throw new IOException("variable length fields not supported yet");
         } else {
@@ -44,10 +51,11 @@ class BufferedRecordReader {
 
     private boolean readFixedRecord() throws IOException {
         var size = fixedLen;
-        recordIndex = 0;
+        recordBufferIndex = 0;
 
         while (size > 0) {
             if (lzfOutSize == 0) {
+                System.out.println("load first lzf block");
                 var read = stream.readNBytes(lzfLengthBuffer.array(), 0, 4);
                 if (read < 4) {
                     return false;
@@ -56,10 +64,26 @@ class BufferedRecordReader {
                 lzfOutSize = readLzfBlock(lzfBlockLength);
             }
 
+            while (size + lzfOutIndex > lzfOutSize) {
+                System.out.println("load next lzf block");
+                var remainingLzf = lzfOutSize - lzfOutIndex;
+                System.arraycopy(lzfOut.array(), lzfOutIndex, recordBuffer.array(), recordBufferIndex, remainingLzf);
+                recordBufferIndex += remainingLzf;
+                size -= remainingLzf;
+
+                var read = stream.readNBytes(lzfLengthBuffer.array(), 0, 4);
+                if (read < 4) {
+                    return false;
+                }
+                var lzfBlockLength = lzfLengthBuffer.getInt(0);
+                lzfOutSize = readLzfBlock(lzfBlockLength);
+                lzfOutIndex = 0;
+            }
+
             var lenToCopy = Math.min(lzfOutSize, size);
-            System.arraycopy(lzfOut.array(), lzfOutIndex, recordBuffer.array(), recordIndex, lenToCopy);
+            System.arraycopy(lzfOut.array(), lzfOutIndex, recordBuffer.array(), recordBufferIndex, lenToCopy);
             lzfOutIndex += lenToCopy;
-            recordIndex += lenToCopy;
+            recordBufferIndex += lenToCopy;
             size -= lenToCopy;
         }
         return true;

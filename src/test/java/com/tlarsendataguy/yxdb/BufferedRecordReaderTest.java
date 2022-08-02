@@ -25,9 +25,6 @@ public class BufferedRecordReaderTest {
     public void TestVeryLongFieldFile() throws IOException {
         var reader = generateReader("src/test/resources/VeryLongField.yxdb",6, true);
 
-        if (true){
-            return;
-        }
         int recordsRead = 0;
         while (reader.nextRecord()) {
             recordsRead++;

@@ -42,17 +42,25 @@ class BufferedRecordReader {
         if (currentRecord > totalRecords) {
             return false;
         }
+        recordBufferIndex = 0;
         if (hasVarFields) {
-            throw new IOException("variable length fields not supported yet");
+            readVariableRecord();
         } else {
-            readFixedRecord();
+            read(fixedLen);
         }
         return true;
     }
 
-    private void readFixedRecord() throws IOException {
-        recordBufferIndex = 0;
-        read(fixedLen);
+    private void readVariableRecord() throws IOException {
+        read(fixedLen+4);
+        var varLength = recordBuffer.getInt(recordBufferIndex-4);
+        if (fixedLen+4+varLength > recordBuffer.capacity()) {
+            var newLength = (fixedLen+4+varLength) * 2;
+            var newBuffer = ByteBuffer.allocate(newLength).order(ByteOrder.LITTLE_ENDIAN);
+            System.arraycopy(recordBuffer.array(), 0, newBuffer.array(), 0, fixedLen+4);
+            recordBuffer = newBuffer;
+        }
+        read(varLength);
     }
 
     private void read(int size) throws IOException {

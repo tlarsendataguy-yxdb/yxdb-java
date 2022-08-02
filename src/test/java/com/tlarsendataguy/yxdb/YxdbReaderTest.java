@@ -4,10 +4,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 public class YxdbReaderTest {
     @Test
-    public void TestGetReader() throws IOException {
+    public void TestGetReader() throws IOException, ParseException {
         var path = "src/test/resources/AllNormalFields.yxdb";
         var yxdb = YxdbReader.loadYxdb(path);
         Assertions.assertEquals(1, yxdb.numRecords);
@@ -20,6 +22,41 @@ public class YxdbReaderTest {
         while (yxdb.next()) {
             Assertions.assertEquals((byte)1, yxdb.readByte(0));
             Assertions.assertEquals((byte)1, yxdb.readByte("ByteField"));
+            Assertions.assertTrue(yxdb.readBoolean(1));
+            Assertions.assertTrue(yxdb.readBoolean("BoolField"));
+            Assertions.assertEquals(16, yxdb.readLong(2));
+            Assertions.assertEquals(16, yxdb.readLong("Int16Field"));
+            Assertions.assertEquals(32, yxdb.readLong(3));
+            Assertions.assertEquals(32, yxdb.readLong("Int32Field"));
+            Assertions.assertEquals(64, yxdb.readLong(4));
+            Assertions.assertEquals(64, yxdb.readLong("Int64Field"));
+            Assertions.assertEquals(123.45, yxdb.readDouble(5));
+            Assertions.assertEquals(123.45, yxdb.readDouble("FixedDecimalField"));
+            Assertions.assertEquals(678.9f, yxdb.readDouble(6));
+            Assertions.assertEquals(678.9f, yxdb.readDouble("FloatField"));
+            Assertions.assertEquals(0.12345, yxdb.readDouble(7));
+            Assertions.assertEquals(0.12345, yxdb.readDouble("DoubleField"));
+            Assertions.assertEquals("A", yxdb.readString(8));
+            Assertions.assertEquals("A", yxdb.readString("StringField"));
+            Assertions.assertEquals("AB", yxdb.readString(9));
+            Assertions.assertEquals("AB", yxdb.readString("WStringField"));
+            Assertions.assertEquals("ABC", yxdb.readString(10));
+            Assertions.assertEquals("ABC", yxdb.readString("V_StringShortField"));
+            Assertions.assertEquals("B".repeat(500), yxdb.readString(11));
+            Assertions.assertEquals("B".repeat(500), yxdb.readString("V_StringLongField"));
+            Assertions.assertEquals("XZY", yxdb.readString(12));
+            Assertions.assertEquals("XZY", yxdb.readString("V_WStringShortField"));
+            Assertions.assertEquals("W".repeat(500), yxdb.readString(13));
+            Assertions.assertEquals("W".repeat(500), yxdb.readString("V_WStringLongField"));
+
+            var expectedDate = new SimpleDateFormat("yyyy-MM-dd").parse("2020-01-01");
+            Assertions.assertEquals(expectedDate, yxdb.readDate(14));
+            Assertions.assertEquals(expectedDate, yxdb.readDate("DateField"));
+
+            var expectedDateTime = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse("2020-02-03 04:05:06");
+            Assertions.assertEquals(expectedDateTime, yxdb.readDate(15));
+            Assertions.assertEquals(expectedDateTime, yxdb.readDate("DateTimeField"));
+
             read++;
         }
 
@@ -34,7 +71,7 @@ public class YxdbReaderTest {
         long sum = 0;
         int index = 0;
         while (yxdb.next()) {
-            var value = yxdb.readInt(0);
+            var value = yxdb.readLong(0);
             if (index % 10000 == 0) {
                 System.out.println("index " + index + ", value " + value);
             }

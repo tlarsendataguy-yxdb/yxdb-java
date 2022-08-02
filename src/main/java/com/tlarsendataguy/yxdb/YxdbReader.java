@@ -12,6 +12,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static java.lang.Integer.parseInt;
@@ -46,15 +47,49 @@ public class YxdbReader {
     public Byte readByte(int index) {
         return record.extractByteFrom(index, recordReader.recordBuffer);
     }
+
     public Byte readByte(String name) {
         return record.extractByteFrom(name, recordReader.recordBuffer);
     }
 
-    public Long readInt(int index) {
+    public Boolean readBoolean(int index) {
+        return record.extractBooleanFrom(index, recordReader.recordBuffer);
+    }
+
+    public Boolean readBoolean(String name) {
+        return record.extractBooleanFrom(name, recordReader.recordBuffer);
+    }
+
+    public Long readLong(int index) {
         return record.extractLongFrom(index, recordReader.recordBuffer);
     }
-    public Long readInt(String name) {
+
+    public Long readLong(String name) {
         return record.extractLongFrom(name, recordReader.recordBuffer);
+    }
+
+    public Double readDouble(int index) {
+        return record.extractDoubleFrom(index, recordReader.recordBuffer);
+    }
+
+    public Double readDouble(String name) {
+        return record.extractDoubleFrom(name, recordReader.recordBuffer);
+    }
+
+    public String readString(int index) {
+        return record.extractStringFrom(index, recordReader.recordBuffer);
+    }
+
+    public String readString(String name) {
+        return record.extractStringFrom(name, recordReader.recordBuffer);
+    }
+
+    public Date readDate(int index) {
+        return record.extractDateFrom(index, recordReader.recordBuffer);
+    }
+
+    public Date readDate(String name) {
+        return record.extractDateFrom(name, recordReader.recordBuffer);
     }
 
     private void loadHeaderAndMetaInfo() throws IOException, IllegalArgumentException {

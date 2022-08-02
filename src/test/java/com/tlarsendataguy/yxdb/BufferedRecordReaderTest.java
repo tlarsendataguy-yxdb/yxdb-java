@@ -11,7 +11,7 @@ import java.nio.ByteOrder;
 public class BufferedRecordReaderTest {
     @Test
     public void TestAllNormalFieldsFile() throws IOException {
-        var reader = generateReader("src/test/resources/LotsOfRecords.yxdb");
+        var reader = generateReader("src/test/resources/LotsOfRecords.yxdb", 5, false);
 
         int recordsRead = 0;
         while (reader.nextRecord()) {
@@ -21,12 +21,28 @@ public class BufferedRecordReaderTest {
         Assertions.assertEquals(100000, recordsRead);
     }
 
-    private BufferedRecordReader generateReader(String path) throws IOException {
+    @Test
+    public void TestVeryLongFieldFile() throws IOException {
+        var reader = generateReader("src/test/resources/VeryLongField.yxdb",6, true);
+
+        if (true){
+            return;
+        }
+        int recordsRead = 0;
+        while (reader.nextRecord()) {
+            recordsRead++;
+            Assertions.assertEquals(recordsRead, reader.recordBuffer.get(0));
+        }
+        Assertions.assertEquals(3, recordsRead);
+    }
+
+    private BufferedRecordReader generateReader(String path, int fixedLen, boolean hasVarFields) throws IOException {
         var stream = new FileInputStream(path);
         var header = ByteBuffer.allocate(512).order(ByteOrder.LITTLE_ENDIAN);
         stream.readNBytes(header.array(), 0, 512);
         var metaInfoSize = header.getInt(80) * 2;
+        var totalRecords = header.getLong(104);
         stream.skip(metaInfoSize);
-        return new BufferedRecordReader(stream,5, false, 100000);
+        return new BufferedRecordReader(stream,fixedLen, hasVarFields, totalRecords);
     }
 }

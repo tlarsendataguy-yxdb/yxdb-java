@@ -45,36 +45,25 @@ class BufferedRecordReader {
         if (hasVarFields) {
             throw new IOException("variable length fields not supported yet");
         } else {
-            return readFixedRecord();
+            readFixedRecord();
         }
+        return true;
     }
 
-    private boolean readFixedRecord() throws IOException {
-        var size = fixedLen;
+    private void readFixedRecord() throws IOException {
         recordBufferIndex = 0;
+        read(fixedLen);
+    }
 
+    private void read(int size) throws IOException {
         while (size > 0) {
             if (lzfOutSize == 0) {
-                var read = stream.readNBytes(lzfLengthBuffer.array(), 0, 4);
-                if (read < 4) {
-                    return false;
-                }
-                var lzfBlockLength = lzfLengthBuffer.getInt(0);
-                lzfOutSize = readLzfBlock(lzfBlockLength);
+                lzfOutSize = readNextLzfBlock();
             }
 
             while (size + lzfOutIndex > lzfOutSize) {
-                var remainingLzf = lzfOutSize - lzfOutIndex;
-                System.arraycopy(lzfOut.array(), lzfOutIndex, recordBuffer.array(), recordBufferIndex, remainingLzf);
-                recordBufferIndex += remainingLzf;
-                size -= remainingLzf;
-
-                var read = stream.readNBytes(lzfLengthBuffer.array(), 0, 4);
-                if (read < 4) {
-                    return false;
-                }
-                var lzfBlockLength = lzfLengthBuffer.getInt(0);
-                lzfOutSize = readLzfBlock(lzfBlockLength);
+                size -= copyRemainingLzfOutToRecord();
+                lzfOutSize = readNextLzfBlock();
                 lzfOutIndex = 0;
             }
 
@@ -84,10 +73,17 @@ class BufferedRecordReader {
             recordBufferIndex += lenToCopy;
             size -= lenToCopy;
         }
-        return true;
     }
 
-    private int readLzfBlock(int lzfBlockLength) throws IOException{
+    private int copyRemainingLzfOutToRecord() {
+        var remainingLzf = lzfOutSize - lzfOutIndex;
+        System.arraycopy(lzfOut.array(), lzfOutIndex, recordBuffer.array(), recordBufferIndex, remainingLzf);
+        recordBufferIndex += remainingLzf;
+        return remainingLzf;
+    }
+
+    private int readNextLzfBlock() throws IOException{
+        var lzfBlockLength = readLzfBlockLength();
         var checkbit = (long)lzfBlockLength & 0x80000000L;
         if (checkbit > 0) {
             lzfBlockLength &= 0x7ffffff;
@@ -96,5 +92,13 @@ class BufferedRecordReader {
             var readIn = stream.readNBytes(lzfIn.array(), 0, lzfBlockLength);
             return lzf.decompress(readIn);
         }
+    }
+
+    private int readLzfBlockLength() throws IOException {
+        var read = stream.readNBytes(lzfLengthBuffer.array(), 0, 4);
+        if (read < 4) {
+            throw new IOException("yxdb file is not valid");
+        }
+        return lzfLengthBuffer.getInt(0);
     }
 }

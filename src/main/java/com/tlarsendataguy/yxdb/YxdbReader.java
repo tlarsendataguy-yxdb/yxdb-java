@@ -17,7 +17,11 @@ import java.util.List;
 
 import static java.lang.Integer.parseInt;
 
-
+/**
+ * YxdbReader contains the public interface for reading .yxdb files.
+ * <p>
+ * Use the loadYxdb() static methods to instantiate an instance of the class and read the contents of a .yxdb file.
+ */
 public class YxdbReader {
     private YxdbReader(String path) throws FileNotFoundException {
         this.path = path;
@@ -32,8 +36,14 @@ public class YxdbReader {
         fields = new ArrayList<>();
     }
 
+    /**
+     * The total number of records in the .yxdb file.
+     */
     public long numRecords;
     private int metaInfoSize;
+    /**
+     * Contains the raw XML metadata from the .yxdb file.
+     */
     public String metaInfoStr;
     private final List<MetaInfoField> fields;
     private final InputStream stream;
@@ -81,7 +91,7 @@ public class YxdbReader {
     }
 
     /**
-     * @return the list of fields in the .yxdb file
+     * @return the list of fields in the .yxdb file. The index of each field in this list matches the index of the field in the .yxdb file.
      */
     public List<YxdbField> listFields() {
         return record.fields;
@@ -90,7 +100,7 @@ public class YxdbReader {
     /**
      * Closes the stream manually if the reader needs to be ended before reaching the end of the file.
      *
-     * @throws IOException
+     * @throws IOException thrown when the stream fails to close
      */
     public void close() throws IOException {
         stream.close();
@@ -107,8 +117,8 @@ public class YxdbReader {
      * }
      * </code>
      *
-     * @return true, if the next record was loaded, and false, if the end of the file was reached
-     * @throws IOException
+     * @return             true, if the next record was loaded, and false, if the end of the file was reached
+     * @throws IOException thrown when there is an error reading the next record
      */
     public boolean next() throws IOException {
         return recordReader.nextRecord();

@@ -28,7 +28,7 @@ public class YxdbReader {
     public long numRecords;
     private int metaInfoSize;
     public String metaInfoStr;
-    public List<MetaInfoField> fields;
+    private final List<MetaInfoField> fields;
     private final FileInputStream stream;
     private final String path;
     private YxdbRecord record;
@@ -38,6 +38,14 @@ public class YxdbReader {
         var reader = new YxdbReader(path);
         reader.loadHeaderAndMetaInfo();
         return reader;
+    }
+
+    public List<YxdbField> listFields() {
+        return record.fields;
+    }
+
+    public void close() throws IOException {
+        stream.close();
     }
 
     public boolean next() throws IOException {

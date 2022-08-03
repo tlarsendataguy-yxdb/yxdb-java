@@ -15,7 +15,7 @@ public class YxdbReaderTest {
         Assertions.assertEquals(1, yxdb.numRecords);
         Assertions.assertNotNull(yxdb.metaInfoStr);
         Assertions.assertEquals(AllNormalFieldsMetaXml, yxdb.metaInfoStr);
-        Assertions.assertEquals(16, yxdb.fields.size());
+        Assertions.assertEquals(16, yxdb.listFields().size());
 
         int read = 0;
         while (yxdb.next()) {

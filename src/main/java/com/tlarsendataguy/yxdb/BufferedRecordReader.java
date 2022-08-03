@@ -1,13 +1,13 @@
 package com.tlarsendataguy.yxdb;
 
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 class BufferedRecordReader {
     static int lzfBufferSize = 262144;
-    public BufferedRecordReader(FileInputStream stream, int fixedLen, boolean hasVarFields, long totalRecords) {
+    public BufferedRecordReader(InputStream stream, int fixedLen, boolean hasVarFields, long totalRecords) {
         this.totalRecords = totalRecords;
         this.stream = stream;
         this.fixedLen = fixedLen;
@@ -22,7 +22,7 @@ class BufferedRecordReader {
         lzf = new Lzf(lzfIn.array(), lzfOut.array());
         lzfLengthBuffer = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN);
     }
-    final FileInputStream stream;
+    final InputStream stream;
     final int fixedLen;
     final boolean hasVarFields;
     final long totalRecords;

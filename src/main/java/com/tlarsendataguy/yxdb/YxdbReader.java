@@ -29,7 +29,7 @@ public class YxdbReader {
     private int metaInfoSize;
     public String metaInfoStr;
     private final List<MetaInfoField> fields;
-    private final FileInputStream stream;
+    private final InputStream stream;
     private final String path;
     private YxdbRecord record;
     private BufferedRecordReader recordReader;

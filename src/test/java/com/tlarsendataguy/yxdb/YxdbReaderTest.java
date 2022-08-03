@@ -80,6 +80,11 @@ public class YxdbReaderTest {
         Assertions.assertEquals(5000050000L, sum);
     }
 
+    @Test
+    public void TestLoadReaderFromStream() {
+
+    }
+
     String AllNormalFieldsMetaXml = """
 <RecordInfo>
 	<Field name="ByteField" source="TextInput:" type="Byte"/>

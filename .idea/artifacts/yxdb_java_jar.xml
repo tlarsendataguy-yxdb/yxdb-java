@@ -3,6 +3,7 @@
     <output-path>$PROJECT_DIR$/out/artifacts/yxdb_java_jar</output-path>
     <root id="archive" name="yxdb-java.jar">
       <element id="module-output" name="yxdb-java.main" />
+      <element id="module-source" name="yxdb-java.main" />
     </root>
   </artifact>
 </component>

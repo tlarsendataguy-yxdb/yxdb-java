@@ -26,7 +26,7 @@ public class YxdbReader {
     }
 
     public long numRecords;
-    public int metaInfoSize;
+    private int metaInfoSize;
     public String metaInfoStr;
     public List<MetaInfoField> fields;
     private final FileInputStream stream;

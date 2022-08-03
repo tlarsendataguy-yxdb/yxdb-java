@@ -1,3 +1,3 @@
 package com.tlarsendataguy.yxdb;
 
-record MetaInfoField(String name, String type, int size, int scale) { }
+public record MetaInfoField(String name, String type, int size, int scale) { }

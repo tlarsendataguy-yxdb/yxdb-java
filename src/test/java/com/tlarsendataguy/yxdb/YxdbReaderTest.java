@@ -13,7 +13,6 @@ public class YxdbReaderTest {
         var path = "src/test/resources/AllNormalFields.yxdb";
         var yxdb = YxdbReader.loadYxdb(path);
         Assertions.assertEquals(1, yxdb.numRecords);
-        Assertions.assertEquals(1372, yxdb.metaInfoSize);
         Assertions.assertNotNull(yxdb.metaInfoStr);
         Assertions.assertEquals(AllNormalFieldsMetaXml, yxdb.metaInfoStr);
         Assertions.assertEquals(16, yxdb.fields.size());

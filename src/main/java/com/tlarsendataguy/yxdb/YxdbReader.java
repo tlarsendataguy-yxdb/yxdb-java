@@ -117,60 +117,125 @@ public class YxdbReader {
     /**
      * Reads a byte field from the .yxdb file
      * @param  index the index of the field to read, starting at 0
-     * @return the value of the byte field at the specified index
+     * @return the value of the byte field at the specified index. May be null
      */
     public Byte readByte(int index) {
         return record.extractByteFrom(index, recordReader.recordBuffer);
     }
 
+    /**
+     * Reads a byte field from the .yxdb file
+     * @param  name the name of the field to read
+     * @return the value of the specified byte field. May be null.
+     */
     public Byte readByte(String name) {
         return record.extractByteFrom(name, recordReader.recordBuffer);
     }
 
+    /**
+     * Reads a boolean field from the .yxdb file
+     * @param  index the index of the field to read, starting at 0
+     * @return the value of the boolean field at the specified index. May be null.
+     */
     public Boolean readBoolean(int index) {
         return record.extractBooleanFrom(index, recordReader.recordBuffer);
     }
 
+    /**
+     * Reads a boolean field from the .yxdb file
+     * @param  name the name of the field to read
+     * @return the value of the specified boolean field. May be null.
+     */
     public Boolean readBoolean(String name) {
         return record.extractBooleanFrom(name, recordReader.recordBuffer);
     }
 
+    /**
+     * Reads a long integer field from the .yxdb file
+     * @param  index the index of the field to read, starting at 0
+     * @return the value of the long integer field at the specified index. May be null.
+     */
     public Long readLong(int index) {
         return record.extractLongFrom(index, recordReader.recordBuffer);
     }
 
+    /**
+     * Reads a long integer field from the .yxdb file
+     * @param  name the name of the field to read
+     * @return the value of the specified long integer field. May be null.
+     */
     public Long readLong(String name) {
         return record.extractLongFrom(name, recordReader.recordBuffer);
     }
 
+    /**
+     * Reads a numeric field from the .yxdb file
+     * @param  index the index of the field to read, starting at 0
+     * @return the value of the numeric field at the specified index. May be null.
+     */
     public Double readDouble(int index) {
         return record.extractDoubleFrom(index, recordReader.recordBuffer);
     }
 
+    /**
+     * Reads a numeric field from the .yxdb file
+     * @param  name the name of the field to read
+     * @return the value of the specified numeric field. May be null.
+     */
     public Double readDouble(String name) {
         return record.extractDoubleFrom(name, recordReader.recordBuffer);
     }
 
+    /**
+     * Reads a text field from the .yxdb file
+     * @param  index the index of the field to read, starting at 0
+     * @return the value of the text field at the specified index. May be null.
+     */
     public String readString(int index) {
         return record.extractStringFrom(index, recordReader.recordBuffer);
     }
 
+    /**
+     * Reads a text field from the .yxdb file
+     * @param  name the name of the field to read
+     * @return the value of the specified text field. May be null.
+     */
     public String readString(String name) {
         return record.extractStringFrom(name, recordReader.recordBuffer);
     }
 
+    /**
+     * Reads a date/datetime field from the .yxdb file
+     * @param  index the index of the field to read, starting at 0
+     * @return the value of the date/datetime field at the specified index. May be null.
+     */
     public Date readDate(int index) {
         return record.extractDateFrom(index, recordReader.recordBuffer);
     }
 
+    /**
+     * Reads a date/datetime field from the .yxdb file
+     * @param  name the name of the field to read
+     * @return the value of the specified date/datetime field. May be null.
+     */
     public Date readDate(String name) {
         return record.extractDateFrom(name, recordReader.recordBuffer);
     }
 
+    /**
+     * Reads a blob field from the .yxdb file
+     * @param  index the index of the field to read, starting at 0
+     * @return the value of the blob field, as an array of bytes, at the specified index. May be null.
+     */
     public byte[] readBlob(int index) {
         return record.extractBlobFrom(index, recordReader.recordBuffer);
     }
 
+    /**
+     * Reads a blob field from the .yxdb file
+     * @param  name the name of the field to read
+     * @return the value of the specified blob field, as an array of bytes. May be null.
+     */
     public byte[] readBlob(String name) {
         return record.extractBlobFrom(name, recordReader.recordBuffer);
     }

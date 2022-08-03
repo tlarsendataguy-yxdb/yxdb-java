@@ -106,6 +106,19 @@ public class YxdbReaderTest {
         Assertions.assertThrows(IllegalArgumentException.class, ()->yxdb.readByte(1));
     }
 
+    @Test
+    public void RetrievingFieldWithInvalidNameThrows() throws IOException {
+        var yxdb = YxdbReader.loadYxdb("src/test/resources/AllNormalFields.yxdb");
+        yxdb.next();
+        Assertions.assertThrows(IllegalArgumentException.class, ()->yxdb.readByte("Invalid"));
+        Assertions.assertThrows(IllegalArgumentException.class, ()->yxdb.readString("Invalid"));
+        Assertions.assertThrows(IllegalArgumentException.class, ()->yxdb.readBoolean("Invalid"));
+        Assertions.assertThrows(IllegalArgumentException.class, ()->yxdb.readBlob("Invalid"));
+        Assertions.assertThrows(IllegalArgumentException.class, ()->yxdb.readDate("Invalid"));
+        Assertions.assertThrows(IllegalArgumentException.class, ()->yxdb.readDouble("Invalid"));
+        Assertions.assertThrows(IllegalArgumentException.class, ()->yxdb.readLong("Invalid"));
+    }
+
     String AllNormalFieldsMetaXml = """
 <RecordInfo>
 	<Field name="ByteField" source="TextInput:" type="Byte"/>

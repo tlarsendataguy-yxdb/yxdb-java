@@ -118,6 +118,9 @@ class YxdbRecord {
 
     public Long extractLongFrom(String name, ByteBuffer buffer) {
         var index = nameToIndex.get(name);
+        if (index == null) {
+            throwInvalidName(name);
+        }
         return extractLongFrom(index, buffer);
     }
 
@@ -131,6 +134,9 @@ class YxdbRecord {
 
     public Double extractDoubleFrom(String name, ByteBuffer buffer) {
         var index = nameToIndex.get(name);
+        if (index == null) {
+            throwInvalidName(name);
+        }
         return extractDoubleFrom(index, buffer);
     }
 
@@ -144,6 +150,9 @@ class YxdbRecord {
 
     public String extractStringFrom(String name, ByteBuffer buffer) {
         var index = nameToIndex.get(name);
+        if (index == null) {
+            throwInvalidName(name);
+        }
         return extractStringFrom(index, buffer);
     }
 
@@ -157,6 +166,9 @@ class YxdbRecord {
 
     public Date extractDateFrom(String name, ByteBuffer buffer) {
         var index = nameToIndex.get(name);
+        if (index == null) {
+            throwInvalidName(name);
+        }
         return extractDateFrom(index, buffer);
     }
 
@@ -170,6 +182,9 @@ class YxdbRecord {
 
     public Boolean extractBooleanFrom(String name, ByteBuffer buffer) {
         var index = nameToIndex.get(name);
+        if (index == null) {
+            throwInvalidName(name);
+        }
         return extractBooleanFrom(index, buffer);
     }
 
@@ -183,6 +198,9 @@ class YxdbRecord {
 
     public Byte extractByteFrom(String name, ByteBuffer buffer) {
         var index = nameToIndex.get(name);
+        if (index == null) {
+            throwInvalidName(name);
+        }
         return extractByteFrom(index, buffer);
     }
 
@@ -196,6 +214,9 @@ class YxdbRecord {
 
     public byte[] extractBlobFrom(String name, ByteBuffer buffer) {
         var index = nameToIndex.get(name);
+        if (index == null) {
+            throwInvalidName(name);
+        }
         return extractBlobFrom(index, buffer);
     }
 
@@ -245,5 +266,9 @@ class YxdbRecord {
 
     private static void throwInvalidIndex(int index, String expectedType) throws IllegalArgumentException {
         throw new IllegalArgumentException("index " + index + " is not a valid index or is not a " + expectedType + " field");
+    }
+
+    private static void throwInvalidName(String name) throws IllegalArgumentException {
+        throw new IllegalArgumentException("field " + name + "does not exist");
     }
 }

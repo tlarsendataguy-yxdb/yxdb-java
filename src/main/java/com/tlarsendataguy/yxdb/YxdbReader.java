@@ -138,8 +138,9 @@ public class YxdbReader {
      * Reads a byte field from the .yxdb file
      * @param  name the name of the field to read
      * @return the value of the specified byte field. May be null.
+     * @throws IllegalArgumentException thrown when the field does not exist or is not a byte field
      */
-    public Byte readByte(String name) {
+    public Byte readByte(String name) throws IllegalArgumentException {
         return record.extractByteFrom(name, recordReader.recordBuffer);
     }
 
@@ -157,8 +158,9 @@ public class YxdbReader {
      * Reads a boolean field from the .yxdb file
      * @param  name the name of the field to read
      * @return the value of the specified boolean field. May be null.
+     * @throws IllegalArgumentException thrown when the field does not exist or is not a boolean field
      */
-    public Boolean readBoolean(String name) {
+    public Boolean readBoolean(String name) throws IllegalArgumentException {
         return record.extractBooleanFrom(name, recordReader.recordBuffer);
     }
 
@@ -176,8 +178,9 @@ public class YxdbReader {
      * Reads a long integer field from the .yxdb file
      * @param  name the name of the field to read
      * @return the value of the specified long integer field. May be null.
+     * @throws IllegalArgumentException thrown when the field does not exist or is not a long integer field
      */
-    public Long readLong(String name) {
+    public Long readLong(String name) throws IllegalArgumentException {
         return record.extractLongFrom(name, recordReader.recordBuffer);
     }
 
@@ -195,8 +198,9 @@ public class YxdbReader {
      * Reads a numeric field from the .yxdb file
      * @param  name the name of the field to read
      * @return the value of the specified numeric field. May be null.
+     * @throws IllegalArgumentException thrown when the field does not exist or is not a numeric field
      */
-    public Double readDouble(String name) {
+    public Double readDouble(String name) throws IllegalArgumentException {
         return record.extractDoubleFrom(name, recordReader.recordBuffer);
     }
 
@@ -214,8 +218,9 @@ public class YxdbReader {
      * Reads a text field from the .yxdb file
      * @param  name the name of the field to read
      * @return the value of the specified text field. May be null.
+     * @throws IllegalArgumentException thrown when the field does not exist or is not a text field
      */
-    public String readString(String name) {
+    public String readString(String name) throws IllegalArgumentException {
         return record.extractStringFrom(name, recordReader.recordBuffer);
     }
 
@@ -233,8 +238,9 @@ public class YxdbReader {
      * Reads a date/datetime field from the .yxdb file
      * @param  name the name of the field to read
      * @return the value of the specified date/datetime field. May be null.
+     * @throws IllegalArgumentException thrown when the field does not exist or is not a date field
      */
-    public Date readDate(String name) {
+    public Date readDate(String name) throws IllegalArgumentException {
         return record.extractDateFrom(name, recordReader.recordBuffer);
     }
 
@@ -252,8 +258,9 @@ public class YxdbReader {
      * Reads a blob field from the .yxdb file
      * @param  name the name of the field to read
      * @return the value of the specified blob field, as an array of bytes. May be null.
+     * @throws IllegalArgumentException thrown when the field does not exist or is not a blob field
      */
-    public byte[] readBlob(String name) {
+    public byte[] readBlob(String name) throws IllegalArgumentException {
         return record.extractBlobFrom(name, recordReader.recordBuffer);
     }
 

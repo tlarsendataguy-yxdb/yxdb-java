@@ -17,6 +17,7 @@ import java.util.List;
 
 import static java.lang.Integer.parseInt;
 
+
 public class YxdbReader {
     private YxdbReader(String path) throws FileNotFoundException {
         this.path = path;
@@ -40,30 +41,84 @@ public class YxdbReader {
     private YxdbRecord record;
     private BufferedRecordReader recordReader;
 
+    /**
+     * Returns a reader that will parse the .yxdb file specified by the path argument.
+     * <p>
+     * Iterate through the records in the .yxdb file by calling next().
+     * <p>
+     * After each call to next(), access the data fields using the readX methods.
+     * <p>
+     * The reader's stream can be closed early by calling the close() method. If the file is read to the end (i.e. next() returns false), the stream is automatically closed.
+     *
+     * @param path the path to a .yxdb file
+     * @return     a reader for the specified .yxdb file. The file header and metadata will already have been read and parsed before this method returns.
+     * @throws IllegalArgumentException thrown when the provided file path does not exist or cannot be accessed
+     * @throws IOException              thrown when there are issues reading the stream
+     */
     public static YxdbReader loadYxdb(String path) throws IllegalArgumentException, IOException {
         var reader = new YxdbReader(path);
         reader.loadHeaderAndMetaInfo();
         return reader;
     }
 
+    /**
+     * Returns a reader that will parse the .yxdb file contained in the stream.
+     * <p>
+     * Iterate through the records in the .yxdb file by calling next().
+     * <p>
+     * After each call to next(), access the data fields using the readX methods.
+     * <p>
+     * The reader's stream can be closed early by calling the close() method. If the file is read to the end (i.e. next() returns false), the stream is automatically closed.
+     *
+     * @param stream       an InputStream for a .yxdb-formatted stream of bytes
+     * @return             a reader for the specified .yxdb file. The file header and metadata will already have been read and parsed before this method returns.
+     * @throws IOException thrown when there are issues reading the stream
+     */
     public static YxdbReader loadYxdb(InputStream stream) throws IOException {
         var reader = new YxdbReader(stream);
         reader.loadHeaderAndMetaInfo();
         return reader;
     }
 
+    /**
+     * @return the list of fields in the .yxdb file
+     */
     public List<YxdbField> listFields() {
         return record.fields;
     }
 
+    /**
+     * Closes the stream manually if the reader needs to be ended before reaching the end of the file.
+     *
+     * @throws IOException
+     */
     public void close() throws IOException {
         stream.close();
     }
 
+    /**
+     * The next function is designed to iterate over each record in the .yxdb file.
+     * <p>
+     * The standard way of iterating through records is to use a while loop:
+     * <p>
+     * <code>
+     * while (reader.next()) {
+     *     // do something
+     * }
+     * </code>
+     *
+     * @return true, if the next record was loaded, and false, if the end of the file was reached
+     * @throws IOException
+     */
     public boolean next() throws IOException {
         return recordReader.nextRecord();
     }
 
+    /**
+     * Reads a byte field from the .yxdb file
+     * @param  index the index of the field to read, starting at 0
+     * @return the value of the byte field at the specified index
+     */
     public Byte readByte(int index) {
         return record.extractByteFrom(index, recordReader.recordBuffer);
     }

@@ -25,6 +25,12 @@ public class YxdbReader {
         fields = new ArrayList<>();
     }
 
+    private YxdbReader(InputStream stream) {
+        path = "";
+        this.stream = stream;
+        fields = new ArrayList<>();
+    }
+
     public long numRecords;
     private int metaInfoSize;
     public String metaInfoStr;
@@ -36,6 +42,12 @@ public class YxdbReader {
 
     public static YxdbReader loadYxdb(String path) throws IllegalArgumentException, IOException {
         var reader = new YxdbReader(path);
+        reader.loadHeaderAndMetaInfo();
+        return reader;
+    }
+
+    public static YxdbReader loadYxdb(InputStream stream) throws IOException {
+        var reader = new YxdbReader(stream);
         reader.loadHeaderAndMetaInfo();
         return reader;
     }

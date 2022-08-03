@@ -3,6 +3,7 @@ package com.tlarsendataguy.yxdb;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -81,8 +82,15 @@ public class YxdbReaderTest {
     }
 
     @Test
-    public void TestLoadReaderFromStream() {
+    public void TestLoadReaderFromStream() throws IOException {
+        var stream = new FileInputStream("src/test/resources/LotsOfRecords.yxdb");
+        var yxdb = YxdbReader.loadYxdb(stream);
 
+        long sum = 0;
+        while (yxdb.next()) {
+            sum += yxdb.readLong(0);
+        }
+        Assertions.assertEquals(5000050000L, sum);
     }
 
     String AllNormalFieldsMetaXml = """

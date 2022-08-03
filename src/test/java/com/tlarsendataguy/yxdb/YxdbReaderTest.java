@@ -93,6 +93,19 @@ public class YxdbReaderTest {
         Assertions.assertEquals(5000050000L, sum);
     }
 
+    @Test
+    public void RetrievingFieldWithWrongTypeThrows() throws IOException {
+        var yxdb = YxdbReader.loadYxdb("src/test/resources/AllNormalFields.yxdb");
+        yxdb.next();
+        Assertions.assertThrows(IllegalArgumentException.class, ()->yxdb.readString(0));
+        Assertions.assertThrows(IllegalArgumentException.class, ()->yxdb.readBoolean(0));
+        Assertions.assertThrows(IllegalArgumentException.class, ()->yxdb.readBlob(0));
+        Assertions.assertThrows(IllegalArgumentException.class, ()->yxdb.readDate(0));
+        Assertions.assertThrows(IllegalArgumentException.class, ()->yxdb.readDouble(0));
+        Assertions.assertThrows(IllegalArgumentException.class, ()->yxdb.readLong(0));
+        Assertions.assertThrows(IllegalArgumentException.class, ()->yxdb.readByte(1));
+    }
+
     String AllNormalFieldsMetaXml = """
 <RecordInfo>
 	<Field name="ByteField" source="TextInput:" type="Byte"/>

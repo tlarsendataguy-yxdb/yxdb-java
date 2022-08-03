@@ -128,8 +128,9 @@ public class YxdbReader {
      * Reads a byte field from the .yxdb file
      * @param  index the index of the field to read, starting at 0
      * @return the value of the byte field at the specified index. May be null
+     * @throws IllegalArgumentException thrown when the index is out of range or the field at the specified index is not a byte field
      */
-    public Byte readByte(int index) {
+    public Byte readByte(int index) throws IllegalArgumentException {
         return record.extractByteFrom(index, recordReader.recordBuffer);
     }
 
@@ -146,8 +147,9 @@ public class YxdbReader {
      * Reads a boolean field from the .yxdb file
      * @param  index the index of the field to read, starting at 0
      * @return the value of the boolean field at the specified index. May be null.
+     * @throws IllegalArgumentException thrown when the index is out of range or the field at the specified index is not a boolean field
      */
-    public Boolean readBoolean(int index) {
+    public Boolean readBoolean(int index) throws IllegalArgumentException {
         return record.extractBooleanFrom(index, recordReader.recordBuffer);
     }
 
@@ -164,8 +166,9 @@ public class YxdbReader {
      * Reads a long integer field from the .yxdb file
      * @param  index the index of the field to read, starting at 0
      * @return the value of the long integer field at the specified index. May be null.
+     * @throws IllegalArgumentException thrown when the index is out of range or the field at the specified index is not a long integer field
      */
-    public Long readLong(int index) {
+    public Long readLong(int index) throws IllegalArgumentException {
         return record.extractLongFrom(index, recordReader.recordBuffer);
     }
 
@@ -182,8 +185,9 @@ public class YxdbReader {
      * Reads a numeric field from the .yxdb file
      * @param  index the index of the field to read, starting at 0
      * @return the value of the numeric field at the specified index. May be null.
+     * @throws IllegalArgumentException thrown when the index is out of range or the field at the specified index is not a numeric field
      */
-    public Double readDouble(int index) {
+    public Double readDouble(int index) throws IllegalArgumentException {
         return record.extractDoubleFrom(index, recordReader.recordBuffer);
     }
 
@@ -200,8 +204,9 @@ public class YxdbReader {
      * Reads a text field from the .yxdb file
      * @param  index the index of the field to read, starting at 0
      * @return the value of the text field at the specified index. May be null.
+     * @throws IllegalArgumentException thrown when the index is out of range or the field at the specified index is not a text field
      */
-    public String readString(int index) {
+    public String readString(int index) throws IllegalArgumentException {
         return record.extractStringFrom(index, recordReader.recordBuffer);
     }
 
@@ -218,8 +223,9 @@ public class YxdbReader {
      * Reads a date/datetime field from the .yxdb file
      * @param  index the index of the field to read, starting at 0
      * @return the value of the date/datetime field at the specified index. May be null.
+     * @throws IllegalArgumentException thrown when the index is out of range or the field at the specified index is not a date/datetime field
      */
-    public Date readDate(int index) {
+    public Date readDate(int index) throws IllegalArgumentException {
         return record.extractDateFrom(index, recordReader.recordBuffer);
     }
 
@@ -236,8 +242,9 @@ public class YxdbReader {
      * Reads a blob field from the .yxdb file
      * @param  index the index of the field to read, starting at 0
      * @return the value of the blob field, as an array of bytes, at the specified index. May be null.
+     * @throws IllegalArgumentException thrown when the index is out of range or the field at the specified index is not a blob field
      */
-    public byte[] readBlob(int index) {
+    public byte[] readBlob(int index) throws IllegalArgumentException {
         return record.extractBlobFrom(index, recordReader.recordBuffer);
     }
 

@@ -109,7 +109,11 @@ class YxdbRecord {
     }
 
     public Long extractLongFrom(int index, ByteBuffer buffer) {
-        return longExtractors.get(index).apply(buffer);
+        var extractor = longExtractors.get(index);
+        if (extractor == null) {
+            throwInvalidIndex(index, "long integer");
+        }
+        return extractor.apply(buffer);
     }
 
     public Long extractLongFrom(String name, ByteBuffer buffer) {
@@ -118,7 +122,11 @@ class YxdbRecord {
     }
 
     public Double extractDoubleFrom(int index, ByteBuffer buffer) {
-        return doubleExtractors.get(index).apply(buffer);
+        var extractor = doubleExtractors.get(index);
+        if (extractor == null) {
+            throwInvalidIndex(index, "numeric");
+        }
+        return extractor.apply(buffer);
     }
 
     public Double extractDoubleFrom(String name, ByteBuffer buffer) {
@@ -127,7 +135,11 @@ class YxdbRecord {
     }
 
     public String extractStringFrom(int index, ByteBuffer buffer) {
-        return stringExtractors.get(index).apply(buffer);
+        var extractor = stringExtractors.get(index);
+        if (extractor == null) {
+            throwInvalidIndex(index, "text");
+        }
+        return extractor.apply(buffer);
     }
 
     public String extractStringFrom(String name, ByteBuffer buffer) {
@@ -136,7 +148,11 @@ class YxdbRecord {
     }
 
     public Date extractDateFrom(int index, ByteBuffer buffer) {
-        return dateExtractors.get(index).apply(buffer);
+        var extractor = dateExtractors.get(index);
+        if (extractor == null) {
+            throwInvalidIndex(index, "date/datetime");
+        }
+        return extractor.apply(buffer);
     }
 
     public Date extractDateFrom(String name, ByteBuffer buffer) {
@@ -145,7 +161,11 @@ class YxdbRecord {
     }
 
     public Boolean extractBooleanFrom(int index, ByteBuffer buffer) {
-        return boolExtractors.get(index).apply(buffer);
+        var extractor = boolExtractors.get(index);
+        if (extractor == null) {
+            throwInvalidIndex(index, "boolean");
+        }
+        return extractor.apply(buffer);
     }
 
     public Boolean extractBooleanFrom(String name, ByteBuffer buffer) {
@@ -154,7 +174,11 @@ class YxdbRecord {
     }
 
     public Byte extractByteFrom(int index, ByteBuffer buffer) {
-        return byteExtractors.get(index).apply(buffer);
+        var extractor = byteExtractors.get(index);
+        if (extractor == null) {
+            throwInvalidIndex(index, "byte");
+        }
+        return extractor.apply(buffer);
     }
 
     public Byte extractByteFrom(String name, ByteBuffer buffer) {
@@ -163,7 +187,11 @@ class YxdbRecord {
     }
 
     public byte[] extractBlobFrom(int index, ByteBuffer buffer) {
-        return blobExtractors.get(index).apply(buffer);
+        var extractor = blobExtractors.get(index);
+        if (extractor == null) {
+            throwInvalidIndex(index, "blob");
+        }
+        return extractor.apply(buffer);
     }
 
     public byte[] extractBlobFrom(String name, ByteBuffer buffer) {
@@ -213,5 +241,9 @@ class YxdbRecord {
         fields.add(new YxdbField(name, type));
         nameToIndex.put(name, index);
         return index;
+    }
+
+    private static void throwInvalidIndex(int index, String expectedType) throws IllegalArgumentException {
+        throw new IllegalArgumentException("index " + index + " is not a valid index or is not a " + expectedType + " field");
     }
 }

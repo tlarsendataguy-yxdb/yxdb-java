@@ -141,6 +141,26 @@ public class YxdbReaderTest {
         Assertions.assertEquals(6, sum);
     }
 
+    @Test
+    public void TestVeryLongField() throws IOException {
+        var yxdb = YxdbReader.loadYxdb("src/test/resources/VeryLongField.yxdb");
+        byte[] blob;
+
+        yxdb.next();
+        blob = yxdb.readBlob(1);
+        Assertions.assertEquals(604732, blob.length);
+
+        yxdb.next();
+        blob = yxdb.readBlob("Blob");
+        Assertions.assertNull(blob);
+
+        yxdb.next();
+        blob = yxdb.readBlob(1);
+        Assertions.assertEquals(604732, blob.length);
+
+        yxdb.close();
+    }
+
     String AllNormalFieldsMetaXml = """
 <RecordInfo>
 	<Field name="ByteField" source="TextInput:" type="Byte"/>

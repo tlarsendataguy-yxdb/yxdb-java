@@ -10,7 +10,7 @@ import java.nio.ByteOrder;
 
 public class BufferedRecordReaderTest {
     @Test
-    public void TestAllNormalFieldsFile() throws IOException {
+    public void TestLotsOfRecords() throws IOException {
         var reader = generateReader("src/test/resources/LotsOfRecords.yxdb", 5, false);
 
         int recordsRead = 0;

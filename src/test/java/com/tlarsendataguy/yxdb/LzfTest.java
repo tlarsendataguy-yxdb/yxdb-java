@@ -15,17 +15,6 @@ public class LzfTest {
     }
 
     @Test
-    public void SmallControlValuesDoSimpleCopies() {
-        byte[] in = new byte[]{0, 25};
-        byte[] out = new byte[]{0};
-        Lzf lzf = new Lzf(in, out);
-
-        int written = lzf.decompress(2);
-        Assertions.assertEquals(1, written);
-        Assertions.assertEquals(25, out[0]);
-    }
-
-    @Test
     public void OutputArrayIsTooSmall() {
         byte[] in = new byte[]{0, 25};
         byte[] out = new byte[]{};
@@ -35,7 +24,7 @@ public class LzfTest {
     }
 
     @Test
-    public void LargerSmallControlValue() {
+    public void SmallControlValuesDoSimpleCopies() {
         byte[] in = new byte[]{4, 1, 2, 3, 4, 5};
         byte[] out = new byte[5];
         Lzf lzf = new Lzf(in, out);

@@ -119,6 +119,28 @@ public class YxdbReaderTest {
         Assertions.assertThrows(IllegalArgumentException.class, ()->yxdb.readLong("Invalid"));
     }
 
+    @Test
+    public void TestTutorialData() throws IOException {
+        var yxdb = YxdbReader.loadYxdb("src/test/resources/TutorialData.yxdb");
+        var mrCount = 0;
+        while (yxdb.next()) {
+            if (yxdb.readString("Prefix").equals("Mr")) {
+                mrCount++;
+            }
+        }
+        Assertions.assertEquals(4068, mrCount);
+    }
+
+    @Test
+    public void TestNewYxdb() throws IOException {
+        var yxdb = YxdbReader.loadYxdb("src/test/resources/TestNewYxdb.yxdb");
+        byte sum = 0;
+        while (yxdb.next()){
+            sum += yxdb.readByte(1);
+        }
+        Assertions.assertEquals(6, sum);
+    }
+
     String AllNormalFieldsMetaXml = """
 <RecordInfo>
 	<Field name="ByteField" source="TextInput:" type="Byte"/>

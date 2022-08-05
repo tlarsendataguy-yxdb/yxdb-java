@@ -262,7 +262,7 @@ public class ExtractorsTest {
         var extract = Extractors.NewBlobExtractor(2);
         byte[] result = extractFromBuffer(extract, new byte[]{0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 1,2,3,4,5,6,7,8});
 
-        Assertions.assertArrayEquals(result, new byte[]{});
+        Assertions.assertArrayEquals(new byte[]{}, result);
     }
 
     @Test

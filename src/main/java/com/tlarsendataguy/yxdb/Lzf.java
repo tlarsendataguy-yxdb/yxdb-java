@@ -64,19 +64,19 @@ class Lzf {
         reference -= unsign(inBuffer[iidx]); // the next byte tells how far back the repeated bytes begin
         iidx++;
 
-        reference = copyFromReferenceAndIncrement(reference);
-        reference = copyFromReferenceAndIncrement(reference);
+        length += 2;
 
         while (length > 0) {
-            reference = copyFromReferenceAndIncrement(reference);
-            length--;
+            var size = Math.min(length, oidx - reference);
+            reference = copyFromReferenceAndIncrement(reference, size);
+            length -= size;
         }
     }
 
-    private int copyFromReferenceAndIncrement(int reference) {
-        outBuffer[oidx] = outBuffer[reference];
-        oidx++;
-        return reference+1;
+    private int copyFromReferenceAndIncrement(int reference, int size) {
+        System.arraycopy(outBuffer, reference, outBuffer, oidx, size);
+        oidx += size;
+        return reference + size;
     }
 
     private static int unsign(byte value) {

@@ -26,11 +26,11 @@ public class YxdbReader {
     private YxdbReader(String path) throws FileNotFoundException {
         this.path = path;
         var file = new File(this.path);
-        stream = new FileInputStream(file);
+        stream = new BufferedInputStream(new FileInputStream(file));
         fields = new ArrayList<>();
     }
 
-    private YxdbReader(InputStream stream) {
+    private YxdbReader(BufferedInputStream stream) {
         path = "";
         this.stream = stream;
         fields = new ArrayList<>();
@@ -46,7 +46,7 @@ public class YxdbReader {
      */
     public String metaInfoStr;
     private final List<MetaInfoField> fields;
-    private final InputStream stream;
+    private final BufferedInputStream stream;
     private final String path;
     private YxdbRecord record;
     private BufferedRecordReader recordReader;
@@ -84,7 +84,7 @@ public class YxdbReader {
      * @return             a reader for the specified .yxdb file. The file header and metadata will already have been read and parsed before this method returns.
      * @throws IOException thrown when there are issues reading the stream
      */
-    public static YxdbReader loadYxdb(InputStream stream) throws IOException {
+    public static YxdbReader loadYxdb(BufferedInputStream stream) throws IOException {
         var reader = new YxdbReader(stream);
         reader.loadHeaderAndMetaInfo();
         return reader;

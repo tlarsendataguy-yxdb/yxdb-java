@@ -3,6 +3,7 @@ package com.tlarsendataguy.yxdb;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
 
+import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.ParseException;
@@ -83,7 +84,7 @@ public class YxdbReaderTest {
 
     @Test
     public void TestLoadReaderFromStream() throws IOException {
-        var stream = new FileInputStream("src/test/resources/LotsOfRecords.yxdb");
+        var stream = new BufferedInputStream(new FileInputStream("src/test/resources/LotsOfRecords.yxdb"));
         var yxdb = YxdbReader.loadYxdb(stream);
 
         long sum = 0;

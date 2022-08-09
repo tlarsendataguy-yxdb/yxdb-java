@@ -13,7 +13,7 @@ public class YxdbReaderTest {
     @Test
     public void TestGetReader() throws IOException, ParseException {
         var path = "src/test/resources/AllNormalFields.yxdb";
-        var yxdb = YxdbReader.loadYxdb(path);
+        var yxdb = new YxdbReader(path);
         Assertions.assertEquals(1, yxdb.numRecords);
         Assertions.assertNotNull(yxdb.metaInfoStr);
         Assertions.assertEquals(AllNormalFieldsMetaXml, yxdb.metaInfoStr);
@@ -67,7 +67,7 @@ public class YxdbReaderTest {
     @Test
     public void TestLotsOfRecords() throws IOException {
         var path = "src/test/resources/LotsOfRecords.yxdb";
-        var yxdb = YxdbReader.loadYxdb(path);
+        var yxdb = new YxdbReader(path);
 
         long sum = 0;
         int index = 0;
@@ -85,7 +85,7 @@ public class YxdbReaderTest {
     @Test
     public void TestLoadReaderFromStream() throws IOException {
         var stream = new BufferedInputStream(new FileInputStream("src/test/resources/LotsOfRecords.yxdb"));
-        var yxdb = YxdbReader.loadYxdb(stream);
+        var yxdb = new YxdbReader(stream);
 
         long sum = 0;
         while (yxdb.next()) {
@@ -96,7 +96,7 @@ public class YxdbReaderTest {
 
     @Test
     public void RetrievingFieldWithWrongTypeThrows() throws IOException {
-        var yxdb = YxdbReader.loadYxdb("src/test/resources/AllNormalFields.yxdb");
+        var yxdb = new YxdbReader("src/test/resources/AllNormalFields.yxdb");
         yxdb.next();
         Assertions.assertThrows(IllegalArgumentException.class, ()->yxdb.readString(0));
         Assertions.assertThrows(IllegalArgumentException.class, ()->yxdb.readBoolean(0));
@@ -109,7 +109,7 @@ public class YxdbReaderTest {
 
     @Test
     public void RetrievingFieldWithInvalidNameThrows() throws IOException {
-        var yxdb = YxdbReader.loadYxdb("src/test/resources/AllNormalFields.yxdb");
+        var yxdb = new YxdbReader("src/test/resources/AllNormalFields.yxdb");
         yxdb.next();
         Assertions.assertThrows(IllegalArgumentException.class, ()->yxdb.readByte("Invalid"));
         Assertions.assertThrows(IllegalArgumentException.class, ()->yxdb.readString("Invalid"));
@@ -122,7 +122,7 @@ public class YxdbReaderTest {
 
     @Test
     public void TestTutorialData() throws IOException {
-        var yxdb = YxdbReader.loadYxdb("src/test/resources/TutorialData.yxdb");
+        var yxdb = new YxdbReader("src/test/resources/TutorialData.yxdb");
         var mrCount = 0;
         while (yxdb.next()) {
             if (yxdb.readString("Prefix").equals("Mr")) {
@@ -134,7 +134,7 @@ public class YxdbReaderTest {
 
     @Test
     public void TestNewYxdb() throws IOException {
-        var yxdb = YxdbReader.loadYxdb("src/test/resources/TestNewYxdb.yxdb");
+        var yxdb = new YxdbReader("src/test/resources/TestNewYxdb.yxdb");
         byte sum = 0;
         while (yxdb.next()){
             sum += yxdb.readByte(1);
@@ -144,7 +144,7 @@ public class YxdbReaderTest {
 
     @Test
     public void TestVeryLongField() throws IOException {
-        var yxdb = YxdbReader.loadYxdb("src/test/resources/VeryLongField.yxdb");
+        var yxdb = new YxdbReader("src/test/resources/VeryLongField.yxdb");
         byte[] blob;
 
         yxdb.next();

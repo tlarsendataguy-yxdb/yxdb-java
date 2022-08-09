@@ -167,9 +167,8 @@ class Extractors {
         var blockFirstByte = buffer.get(blockStart);
         if (isSmallBlock(blockFirstByte)) {
             return getSmallBlob(buffer, blockStart);
-        } else {
-            return getNormalBlob(buffer, blockStart);
         }
+        return getNormalBlob(buffer, blockStart);
     }
 
     private static Date parseDate(ByteBuffer buffer, int start, int length, DateFormat format) {
@@ -185,9 +184,8 @@ class Extractors {
         int end = getEndOfStringPos(buffer.array(), start, fieldLength, charSize);
         if (charSize == 1) {
             return new String(Arrays.copyOfRange(buffer.array(), start, end), StandardCharsets.UTF_8);
-        } else {
-            return new String(Arrays.copyOfRange(buffer.array(), start, end), StandardCharsets.UTF_16LE);
         }
+        return new String(Arrays.copyOfRange(buffer.array(), start, end), StandardCharsets.UTF_16LE);
     }
 
     private static int getEndOfStringPos(byte[] buffer, int start, int fieldLength, int charSize) {

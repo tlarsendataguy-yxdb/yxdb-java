@@ -26,7 +26,7 @@ Fields can be access via the `readX()` methods on the YxdbReader class. There ar
 * `readString()` - read String, WString, V_String, and V_WString fields
 
 Each read method has 2 overloads:
-* `getX(int index)` - read by field index number
-* `getX(String name)` - read by field name
+* `readX(int index)` - read by field index number
+* `readX(String name)` - read by field name
 
 If either the index number or field name is invalid, the read methods will throw an `IllegalArgumentException`.

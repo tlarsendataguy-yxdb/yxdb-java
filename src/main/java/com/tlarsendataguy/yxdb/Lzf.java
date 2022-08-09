@@ -7,8 +7,8 @@ class Lzf {
     }
     byte[] inBuffer;
     byte[] outBuffer;
-    int iidx;
-    int oidx;
+    int inIndex;
+    int outIndex;
     int inLen;
 
     public int decompress(int len) throws IllegalArgumentException {
@@ -19,9 +19,9 @@ class Lzf {
             return 0;
         }
 
-        while (iidx < inLen) {
-            int ctrl = unsign(inBuffer[iidx]);
-            iidx++;
+        while (inIndex < inLen) {
+            int ctrl = unsign(inBuffer[inIndex]);
+            inIndex++;
 
             if (ctrl < 32) {
                 copyByteSequence(ctrl);
@@ -30,52 +30,52 @@ class Lzf {
             }
         }
 
-        return oidx;
+        return outIndex;
     }
 
     private void reset() {
-        this.iidx = 0;
-        this.oidx = 0;
+        this.inIndex = 0;
+        this.outIndex = 0;
     }
 
     private void copyByteSequence(int ctrl) throws IllegalArgumentException {
         int len = ctrl+1;
-        if (oidx + len > outBuffer.length) {
+        if (outIndex + len > outBuffer.length) {
             throw new IllegalArgumentException("output array is too small");
         }
-        System.arraycopy(inBuffer, iidx, outBuffer, oidx, len);
-        oidx += len;
-        iidx += len;
+        System.arraycopy(inBuffer, inIndex, outBuffer, outIndex, len);
+        outIndex += len;
+        inIndex += len;
     }
 
     private void expandRepeatedBytes(int ctrl) throws IllegalArgumentException {
         int length = ctrl >> 5;
-        int reference = oidx - ((ctrl & 0x1f) << 8) - 1; // magic
+        int reference = outIndex - ((ctrl & 0x1f) << 8) - 1; // magic
 
         if (length == 7) { // when length is 7, the next byte has additional length
-            length += unsign(inBuffer[iidx]);
-            iidx++;
+            length += unsign(inBuffer[inIndex]);
+            inIndex++;
         }
 
-        if (oidx+length+2 > outBuffer.length) {
+        if (outIndex +length+2 > outBuffer.length) {
             throw new IllegalArgumentException("output array is too small");
         }
 
-        reference -= unsign(inBuffer[iidx]); // the next byte tells how far back the repeated bytes begin
-        iidx++;
+        reference -= unsign(inBuffer[inIndex]); // the next byte tells how far back the repeated bytes begin
+        inIndex++;
 
         length += 2;
 
         while (length > 0) {
-            var size = Math.min(length, oidx - reference);
+            var size = Math.min(length, outIndex - reference);
             reference = copyFromReferenceAndIncrement(reference, size);
             length -= size;
         }
     }
 
     private int copyFromReferenceAndIncrement(int reference, int size) {
-        System.arraycopy(outBuffer, reference, outBuffer, oidx, size);
-        oidx += size;
+        System.arraycopy(outBuffer, reference, outBuffer, outIndex, size);
+        outIndex += size;
         return reference + size;
     }
 

@@ -70,14 +70,8 @@ public class YxdbReaderTest {
         var yxdb = new YxdbReader(path);
 
         long sum = 0;
-        int index = 0;
         while (yxdb.next()) {
-            var value = yxdb.readLong(0);
-            if (index % 10000 == 0) {
-                System.out.println("index " + index + ", value " + value);
-            }
-            sum += value;
-            index++;
+            sum += yxdb.readLong(0);
         }
         Assertions.assertEquals(5000050000L, sum);
     }

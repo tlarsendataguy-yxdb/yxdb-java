@@ -4,9 +4,9 @@ yxdb-java is a library for reading YXDB files into Java applications.
 
 The library does not have external dependencies and is a pure Java solution.
 
-The public API is contained in the YxdbReader class. Instantiate YxdbReader using the following methods:
-* `loadYxdb(String)` - load from a file
-* `loadYxdb(InputStream)` - load from an in-memory stream
+The public API is contained in the YxdbReader class. Instantiate YxdbReader using one of the two constructors:
+* `new YxdbReader(String)` - load from a file
+* `new YxdbReader(InputStream)` - load from an in-memory stream
 
 Iterate through the records in the file using the `next()` method in a while loop:
 

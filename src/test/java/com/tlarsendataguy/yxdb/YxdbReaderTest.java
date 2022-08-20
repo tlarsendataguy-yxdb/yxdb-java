@@ -99,6 +99,11 @@ public class YxdbReaderTest {
         Assertions.assertThrows(IllegalArgumentException.class, ()->yxdb.readDouble(0));
         Assertions.assertThrows(IllegalArgumentException.class, ()->yxdb.readLong(0));
         Assertions.assertThrows(IllegalArgumentException.class, ()->yxdb.readByte(1));
+        try {
+            yxdb.readString(0);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     @Test
@@ -112,6 +117,11 @@ public class YxdbReaderTest {
         Assertions.assertThrows(IllegalArgumentException.class, ()->yxdb.readDate("Invalid"));
         Assertions.assertThrows(IllegalArgumentException.class, ()->yxdb.readDouble("Invalid"));
         Assertions.assertThrows(IllegalArgumentException.class, ()->yxdb.readLong("Invalid"));
+        try {
+            yxdb.readString("Invalid");
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     @Test
@@ -154,6 +164,28 @@ public class YxdbReaderTest {
         Assertions.assertEquals(604732, blob.length);
 
         yxdb.close();
+    }
+
+    @Test
+    public void TestInvalidFile() {
+        try {
+            new YxdbReader("src/test/resources/invalid.txt");
+        } catch (Exception ex) {
+            var msg = ex.getMessage();
+            Assertions.assertEquals("file is not a valid YXDB file", msg);
+            ex.printStackTrace();
+        }
+    }
+
+    @Test
+    public void TestSmallInvalidFile() {
+        try {
+            new YxdbReader("src/test/resources/invalidSmall.txt");
+        } catch (Exception ex) {
+            var msg = ex.getMessage();
+            Assertions.assertEquals("file is not a valid YXDB file", msg);
+            ex.printStackTrace();
+        }
     }
 
     String AllNormalFieldsMetaXml = """

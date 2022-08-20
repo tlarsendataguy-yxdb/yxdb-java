@@ -269,6 +269,6 @@ class YxdbRecord {
     }
 
     private static void throwInvalidName(String name) throws IllegalArgumentException {
-        throw new IllegalArgumentException("field " + name + "does not exist");
+        throw new IllegalArgumentException("field " + name + " does not exist");
     }
 }

@@ -34,10 +34,10 @@ public class YxdbReader {
      * The reader's stream can be closed early by calling the close() method. If the file is read to the end (i.e. next() returns false), the stream is automatically closed.
      *
      * @param path                      the path to a .yxdb file
-     * @throws IllegalArgumentException thrown when the provided file path does not exist or cannot be accessed
+     * @throws IllegalArgumentException thrown when the provided file path does not exist or is not a valid YXDB file
      * @throws IOException              thrown when there are issues reading the file
      */
-    public YxdbReader(String path) throws IOException {
+    public YxdbReader(String path) throws IOException, IllegalArgumentException {
         this.path = path;
         var file = new File(this.path);
         stream = new BufferedInputStream(new FileInputStream(file));
@@ -55,9 +55,10 @@ public class YxdbReader {
      * The reader's stream can be closed early by calling the close() method. If the file is read to the end (i.e. next() returns false), the stream is automatically closed.
      *
      * @param stream       an InputStream for a .yxdb-formatted stream of bytes
+     * @throws IllegalArgumentException thrown when the stream does not contain a valid YXDB file
      * @throws IOException thrown when there are issues reading the stream
      */
-    public YxdbReader(BufferedInputStream stream) throws IOException {
+    public YxdbReader(BufferedInputStream stream) throws IOException, IllegalArgumentException {
         path = "";
         this.stream = stream;
         fields = new ArrayList<>();
@@ -89,7 +90,7 @@ public class YxdbReader {
     /**
      * Closes the stream manually if the reader needs to be ended before reaching the end of the file.
      *
-     * @throws IOException thrown when the stream fails to close
+     * @throws IOException thrown when the stream fails to close or closes with an error
      */
     public void close() throws IOException {
         stream.close();
@@ -255,6 +256,10 @@ public class YxdbReader {
 
     private void loadHeaderAndMetaInfo() throws IOException, IllegalArgumentException {
         var header = getHeader();
+        var fileType = new String(header.array(), 0, 21, StandardCharsets.UTF_8);
+        if (!"Alteryx Database File".equals(fileType)) {
+            closeStreamAndThrow();
+        }
         numRecords = header.getLong(104);
         metaInfoSize = header.getInt(80);
         loadMetaInfo();
@@ -363,8 +368,10 @@ public class YxdbReader {
     private void closeStreamAndThrow() throws IllegalArgumentException {
         try {
             stream.close();
-        } catch (Exception ex) {
-            throw new IllegalArgumentException(String.format("file '%s' is an invalid yxdb file", path));
         }
+        catch (Exception ex) {
+            throw new IllegalArgumentException("file is not a valid YXDB file");
+        }
+        throw new IllegalArgumentException("file is not a valid YXDB file");
     }
 }

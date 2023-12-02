@@ -235,7 +235,7 @@ public class ExtractorsTest {
         // blob starts at index 6 and contains an array of 200 instances of value 66 (the character 'B')
         var extract = Extractors.NewBlobExtractor(6);
         byte[] result = extractFromBuffer(extract, normalBlob);
-        var expected = "B".repeat(200).getBytes(StandardCharsets.UTF_8);
+        var expected = "B".repeat(200).getBytes(StandardCharsets.ISO_8859_1);
         Assertions.assertArrayEquals(expected, result);
     }
 
@@ -244,7 +244,7 @@ public class ExtractorsTest {
         // blob starts at index 6 and contains an array of 100 instances of value 66 (the character 'B')
         var extract = Extractors.NewBlobExtractor(6);
         byte[] result = extractFromBuffer(extract, smallBlob);
-        var expected = "B".repeat(100).getBytes(StandardCharsets.UTF_8);
+        var expected = "B".repeat(100).getBytes(StandardCharsets.ISO_8859_1);
         Assertions.assertArrayEquals(expected, result);
     }
 

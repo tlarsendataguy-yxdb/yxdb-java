@@ -132,7 +132,7 @@ class Extractors {
             if (bytes == null) {
                 return null;
             }
-            return new String(bytes, StandardCharsets.UTF_8);
+            return new String(bytes, StandardCharsets.ISO_8859_1);
         };
     }
 
@@ -172,7 +172,7 @@ class Extractors {
     }
 
     private static Date parseDate(ByteBuffer buffer, int start, int length, DateFormat format) {
-        var str = new String(buffer.array(), start, length, StandardCharsets.UTF_8);
+        var str = new String(buffer.array(), start, length, StandardCharsets.ISO_8859_1);
         try {
             return format.parse(str);
         } catch (ParseException ex) {
@@ -183,7 +183,7 @@ class Extractors {
     private static String getString(ByteBuffer buffer, int start, int fieldLength, int charSize) {
         int end = getEndOfStringPos(buffer.array(), start, fieldLength, charSize);
         if (charSize == 1) {
-            return new String(Arrays.copyOfRange(buffer.array(), start, end), StandardCharsets.UTF_8);
+            return new String(Arrays.copyOfRange(buffer.array(), start, end), StandardCharsets.ISO_8859_1);
         }
         return new String(Arrays.copyOfRange(buffer.array(), start, end), StandardCharsets.UTF_16LE);
     }

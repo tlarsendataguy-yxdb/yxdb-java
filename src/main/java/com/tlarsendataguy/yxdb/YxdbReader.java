@@ -256,7 +256,7 @@ public class YxdbReader {
 
     private void loadHeaderAndMetaInfo() throws IOException, IllegalArgumentException {
         var header = getHeader();
-        var fileType = new String(header.array(), 0, 21, StandardCharsets.UTF_8);
+        var fileType = new String(header.array(), 0, 21, StandardCharsets.ISO_8859_1);
         if (!"Alteryx Database File".equals(fileType)) {
             closeStreamAndThrow();
         }

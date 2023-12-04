@@ -30,3 +30,5 @@ Each read method has 2 overloads:
 * `readX(String name)` - read by field name
 
 If either the index number or field name is invalid, the read methods will throw an `IllegalArgumentException`.
+
+To read spatial objects, use the `yxdb.Spatial.ToGeoJson()` function. The `ToGeoJson()` function translates the binary SpatialObj format into a GeoJSON string.
